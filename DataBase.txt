@@ -1,0 +1,90 @@
+-- Base de datos mundo_cripto
+CREATE DATABASE IF NOT EXISTS mundo_cripto1;
+USE mundo_cripto1;
+
+-- Tabla de usuarios
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Tabla principal de transacciones
+CREATE TABLE portfolio_transactions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    type ENUM('buy', 'sell', 'withdraw') NOT NULL,
+    cryptoSymbol VARCHAR(10),
+    cryptoName VARCHAR(50),
+    amount DECIMAL(18, 8), -- Para cantidades muy pequeñas de cripto
+    price DECIMAL(12, 4), -- Precio de la cripto al momento de la transacción
+    investment DECIMAL(12, 4), -- Monto total invertido (solo para compras)
+    saleValue DECIMAL(12, 4), -- Valor de venta (solo para ventas)
+    purchasePrice DECIMAL(12, 4), -- Precio de compra original (solo para ventas)
+    profit DECIMAL(12, 4), -- Ganancia/pérdida (solo para ventas)
+    profitPercentage DECIMAL(8, 4), -- Porcentaje de ganancia/pérdida
+    fee DECIMAL(10, 4), -- Comisión de la transacción
+    totalCost DECIMAL(12, 4), -- Costo total (inversión + fee)
+    netAmount DECIMAL(12, 4), -- Cantidad neta recibida (ventas/retiros)
+    status ENUM('completed', 'pending', 'cancelled') DEFAULT 'completed',
+    timestamp DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_timestamp (timestamp),
+    INDEX idx_type (type),
+    INDEX idx_crypto (cryptoSymbol)
+);
+
+-- Tabla de snapshots del portafolio (para seguimiento histórico)
+CREATE TABLE portfolio_snapshots (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    totalBalance DECIMAL(12, 4) NOT NULL,
+    availableBalance DECIMAL(12, 4) NOT NULL,
+    totalInvested DECIMAL(12, 4) NOT NULL,
+    totalProfit DECIMAL(12, 4) NOT NULL,
+    totalProfitPercentage DECIMAL(8, 4) NOT NULL,
+    snapshot_date DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user_id (user_id),
+    INDEX idx_snapshot_date (snapshot_date)
+);
+
+-- Tabla de inversiones activas (opcional, para consultas rápidas)
+CREATE TABLE portfolio_investments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    cryptoSymbol VARCHAR(10) NOT NULL,
+    cryptoName VARCHAR(50) NOT NULL,
+    amount DECIMAL(18, 8) NOT NULL,
+    purchasePrice DECIMAL(12, 4) NOT NULL,
+    currentPrice DECIMAL(12, 4) NOT NULL,
+    currentValue DECIMAL(12, 4) NOT NULL,
+    profit DECIMAL(12, 4) NOT NULL,
+    profitPercentage DECIMAL(8, 4) NOT NULL,
+    investmentValue DECIMAL(12, 4) NOT NULL,
+    last_updated DATETIME NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_crypto (user_id, cryptoSymbol),
+    INDEX idx_user_id (user_id),
+    INDEX idx_crypto (cryptoSymbol)
+);
+
+
+
+select * from users;
+select * from portfolio_transactions;
+select * from portfolio_snapshots;
+select * from portfolio_investments;
+

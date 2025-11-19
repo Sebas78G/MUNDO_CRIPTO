@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mundo Cripto</title>
+    <link rel="stylesheet" href="/Fronted/Style/styles.css">
+        <link rel="stylesheet" href="/Fronted/Style/header.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+<header class="header">
+    <div class="container">
+        <h1 class="logo">Mundo Cripto</h1>
+        <nav class="nav">
+            <a href="#inicio" class="nav-link active">Inicio</a>
+            <a href="/Fronted/Pages/graficos.html" class="nav-link">Graficos</a>
+            <a href="/Fronted/Pages/Portafolio.html" class="nav-link">Portafolio</a>
+            <a href="/Fronted/Pages/perfil.html" class="nav-link">Perfil</a>
+            
+            <div class="auth-section">
+                <!-- Se llenará automáticamente con JavaScript -->
+            </div>
+        </nav>
+    </div>
+</header>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>El futuro financiero es digital</h2>
+                <p>Descubre el mundo de las criptomonedas con información actualizada y herramientas profesionales.</p>
+                <div class="hero-actions">
+                    <button class="btn btn-large">Explorar Mercado</button>
+                    <button class="btn btn-outline">Aprender Más</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Noticias -->
+    <section id="noticias" class="section">
+        <div class="container">
+            <h2 class="section-title">Últimas Noticias</h2>
+            <div class="news-grid">
+                <div class="news-card">
+                    <h3>Bitcoin alcanza nuevos máximos</h3>
+                    <p>El mercado cripto continúa en alza con Bitcoin liderando las ganancias.</p>
+                </div>
+                <div class="news-card">
+                    <h3>Ethereum 2.0 actualización exitosa</h3>
+                    <p>La transición a Proof-of-Stake se completa con éxito.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Mercado -->
+    <section id="mercado" class="section market-section">
+        <div class="container">
+            <h2 class="section-title">Mercado en Tiempo Real</h2>
+            <div class="market-cards">
+                <div class="market-card">
+                    <h3>BTC</h3>
+                    <p>$45,000</p>
+                </div>
+                <div class="market-card">
+                    <h3>ETH</h3>
+                    <p>$3,200</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Nueva Sección de Educación -->
+    <section id="educacion" class="section education-section">
+        <div class="container">
+            <h2 class="section-title">Centro de Educación Cripto</h2>
+            <p class="section-subtitle">Aprende desde cero hasta nivel avanzado con nuestros recursos educativos</p>
+            
+            <div class="education-levels">
+                <div class="level-tabs">
+                    <button class="level-tab active" data-level="beginner">Principiante 🚀</button>
+                    <button class="level-tab" data-level="intermediate">Intermedio 📈</button>
+                    <button class="level-tab" data-level="advanced">Avanzado 💎</button>
+                </div>
+                
+                <div class="level-content active" id="beginner-content">
+                    <div class="guides-grid">
+                        <div class="guide-card">
+                            <div class="guide-icon">🔗</div>
+                            <h3>¿Qué es Blockchain?</h3>
+                            <p>Descubre la tecnología que está revolucionando no solo las finanzas, sino múltiples industrias.</p>
+                            <button class="btn btn-outline learn-btn" data-guide-id="blockchain-guide">
+                                Aprender ↓
+                            </button>
+                        </div>
+                        
+                        <div class="guide-card">
+                            <div class="guide-icon">🚀</div>
+                            <h3>Primeros Pasos en Cripto</h3>
+                            <p>Guía completa para empezar tu viaje en el mundo de las criptomonedas de forma segura.</p>
+                            <button class="btn btn-outline learn-btn" data-guide-id="primeros-pasos-guide">
+                                Aprender ↓
+                            </button>
+                        </div>
+                        
+                        <div class="guide-card">
+                            <div class="guide-icon">🔒</div>
+                            <h3>Seguridad y Wallets</h3>
+                            <p>Aprende las mejores prácticas para proteger tus activos digitales de posibles amenazas.</p>
+                            <button class="btn btn-outline learn-btn" data-guide-id="seguridad-guide">
+                                Aprender ↓
+                            </button>
+                        </div>
+                        
+                        <div class="guide-card">
+                            <div class="guide-icon">📈</div>
+                            <h3>Trading Básico</h3>
+                            <p>Conceptos fundamentales del trading: análisis técnico, fundamental y estrategias.</p>
+                            <button class="btn btn-outline learn-btn" data-guide-id="trading-basico-guide">
+                                Aprender ↓
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="level-content" id="intermediate-content">
+                    <div class="guides-grid">
+                        <div class="guide-card">
+                            <div class="guide-icon">🔄</div>
+                            <h3>DeFi - Finanzas Descentralizadas</h3>
+                            <p>Aprende sobre lending, borrowing, yield farming y los principales protocolos DeFi.</p>
+                            <button class="btn btn-outline learn-btn" data-guide-id="defi-guide">
+                                Aprender ↓
+                            </button>
+                        </div>
+                        
+                        <div class="guide-card">
+                            <div class="guide-icon">🎨</div>
+                            <h3>NFTs y Metaverso</h3>
+                            <p>Descubre el mundo de los tokens no fungibles, coleccionables digitales y oportunidades.</p>
+                            <button class="btn btn-outline learn-btn" data-guide-id="nft-guide">
+                                Aprender ↓
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="level-content" id="advanced-content">
+                    <div class="guides-grid">
+                        <div class="guide-card">
+                            <div class="guide-icon">🔧</div>
+                            <h3>Smart Contracts</h3>
+                            <p>Programación de contratos inteligentes en Solidity y desarrollo DApps.</p>
+                            <button class="btn btn-outline learn-btn" data-guide-id="smart-contracts-guide">
+                                Aprender ↓
+                            </button>
+                        </div>
+                        
+                        <div class="guide-card">
+                            <div class="guide-icon">🛠️</div>
+                            <h3>Arbitraje y Trading Avanzado</h3>
+                            <p>Estrategias complejas, bots de trading y análisis cuantitativo.</p>
+                            <button class="btn btn-outline learn-btn" data-guide-id="arbitraje-guide">
+                                Aprender ↓
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modales de Autenticación -->
+    <div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Iniciar Sesión</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginEmail">Correo Electrónico</label>
+                <input type="email" id="loginEmail" placeholder="tu@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Contraseña</label>
+                <input type="password" id="loginPassword" placeholder="Tu contraseña" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Iniciar Sesión</button>
+        </form>
+        <p class="auth-switch">
+            ¿No tienes cuenta? <a href="#" id="switchToRegister">Regístrate aquí</a>
+        </p>
+    </div>
+</div>
+
+
+    <div id="registerModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Crear Cuenta</h2>
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="registerName">Nombre Completo</label>
+                <input type="text" id="registerName" placeholder="Tu nombre completo" required>
+            </div>
+            <div class="form-group">
+                <label for="registerEmail">Correo Electrónico</label>
+                <input type="email" id="registerEmail" placeholder="tu@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Contraseña</label>
+                <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
+            </div>
+            <div class="form-group">
+                <label for="registerConfirmPassword">Confirmar Contraseña</label>
+                <input type="password" id="registerConfirmPassword" placeholder="Repite tu contraseña" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">Crear Cuenta</button>
+        </form>
+        <p class="auth-switch">
+            ¿Ya tienes cuenta? <a href="#" id="switchToLogin">Inicia sesión aquí</a>
+        </p>
+    </div>
+</div>
+
+    <!-- Modales Educativos -->
+    <div id="blockchain-guide-modal" class="modal guide-modal">
+        <div class="modal-content guide-modal-content">
+            <span class="close">&times;</span>
+            
+            <div class="guide-modal-header">
+                <div class="guide-modal-icon">🔗</div>
+                <div class="guide-modal-info">
+                    <span class="guide-modal-category tecnologia">
+                        Tecnología
+                    </span>
+                    <h2>¿Qué es Blockchain?</h2>
+                    <p class="guide-modal-description">Descubre la tecnología que está revolucionando no solo las finanzas, sino múltiples industrias.</p>
+                </div>
+            </div>
+
+            <div class="guide-modal-body">
+                <div class="guide-modal-content-text">
+                    <h3>🚀 La Revolución Blockchain</h3>
+                    <p>Blockchain es una tecnología de registro distribuido que almacena información en bloques encadenados cronológicamente. Es la base tecnológica detrás de Bitcoin, Ethereum y todas las criptomonedas.</p>
+
+                    <h4>🎯 Características Fundamentales</h4>
+                    <ul>
+                        <li><strong>Descentralizada:</strong> No controlada por una sola entidad o autoridad central</li>
+                        <li><strong>Inmutable:</strong> Los datos una vez escritos no pueden ser alterados o eliminados</li>
+                        <li><strong>Transparente:</strong> Todas las transacciones son visibles para los participantes</li>
+                        <li><strong>Segura:</strong> Protegida por criptografía avanzada y consenso distribuido</li>
+                    </ul>
+
+                    <h4>🔧 ¿Cómo Funciona?</h4>
+                    <p>Imagina un libro de contabilidad digital que está copiado en miles de computadoras alrededor del mundo. Cada vez que ocurre una transacción:</p>
+                    <ol>
+                        <li>Se verifica por múltiples nodos</li>
+                        <li>Se agrupa en un "bloque" con otras transacciones</li>
+                        <li>Se añade a la "cadena" de bloques anteriores</li>
+                        <li>Se distribuye a todos los participantes</li>
+                    </ol>
+
+                    <h4>🌍 Aplicaciones Más Allá de las Criptomonedas</h4>
+                    <div class="applications-grid">
+                        <div class="app-card">
+                            <strong>🏦 Finanzas</strong>
+                            <p>Transferencias internacionales rápidas y económicas</p>
+                        </div>
+                        <div class="app-card">
+                            <strong>📦 Supply Chain</strong>
+                            <p>Seguimiento transparente de productos</p>
+                        </div>
+                        <div class="app-card">
+                            <strong>🏥 Salud</strong>
+                            <p>Historiales médicos seguros e interoperables</p>
+                        </div>
+                        <div class="app-card">
+                            <strong>🗳️ Votación</strong>
+                            <p>Sistemas electorales transparentes y auditables</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="guide-modal-actions">
+                    <button class="btn btn-primary guide-modal-close">
+                        ¡Entendido! 👍
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="primeros-pasos-guide-modal" class="modal guide-modal">
+        <div class="modal-content guide-modal-content">
+            <span class="close">&times;</span>
+            
+            <div class="guide-modal-header">
+                <div class="guide-modal-icon">🚀</div>
+                <div class="guide-modal-info">
+                    <span class="guide-modal-category inicio">
+                        Para Principiantes
+                    </span>
+                    <h2>Primeros Pasos en Cripto</h2>
+                    <p class="guide-modal-description">Guía completa para empezar tu viaje en el mundo de las criptomonedas de forma segura.</p>
+                </div>
+            </div>
+
+            <div class="guide-modal-body">
+                <div class="guide-modal-content-text">
+                    <h3>🎯 Comienza tu Viaje Cripto</h3>
+                    <p>Entrar al mundo de las criptomonedas puede parecer abrumador, pero con esta guía paso a paso estarás listo para empezar de forma segura y confiada.</p>
+
+                    <h4>📝 Paso 1: Educación e Investigación</h4>
+                    <div class="step">
+                        <strong>Antes de invertir, entiende:</strong>
+                        <ul>
+                            <li>¿Qué son las criptomonedas?</li>
+                            <li>¿Cómo funciona la tecnología blockchain?</li>
+                            <li>¿Cuáles son los riesgos y beneficios?</li>
+                            <li>¿Qué proyectos tienen potencial real?</li>
+                        </ul>
+                        <p><em>Regla de oro: Nunca inviertas más de lo que estés dispuesto a perder.</em></p>
+                    </div>
+
+                    <h4>💼 Paso 2: Elegir un Exchange</h4>
+                    <div class="exchanges-comparison">
+                        <div class="exchange">
+                            <strong>Coinbase</strong>
+                            <p>✅ Ideal para principiantes<br>✅ Interfaz intuitiva<br>✅ Seguro y regulado<br>⛔ Fees más altos</p>
+                        </div>
+                        <div class="exchange">
+                            <strong>Binance</strong>
+                            <p>✅ Amplia variedad de criptos<br>✅ Fees competitivos<br>✅ Funciones avanzadas<br>⛔ Menos regulado</p>
+                        </div>
+                        <div class="exchange">
+                            <strong>Kraken</strong>
+                            <p>✅ Excelente seguridad<br>✅ Buen soporte<br>✅ Transparente<br>⛔ Interfaz compleja</p>
+                        </div>
+                    </div>
+
+                    <h4>💰 Paso 4: Tu Primera Compra</h4>
+                    <div class="buying-guide">
+                        <div class="strategy">
+                            <strong>💡 Estrategia DCA (Dollar Cost Averaging)</strong>
+                            <p>Compra pequeñas cantidades regularmente en lugar de todo de una vez. Esto reduce el riesgo de timing del mercado.</p>
+                        </div>
+                        <div class="recommendation">
+                            <strong>🎯 Criptos para Empezar</strong>
+                            <ul>
+                                <li><strong>Bitcoin (BTC):</strong> Reserva de valor digital</li>
+                                <li><strong>Ethereum (ETH):</strong> Plataforma de contratos inteligentes</li>
+                                <li><strong>Estables (USDT/USDC):</strong> Para aprender trading</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="guide-modal-actions">
+                    <button class="btn btn-primary guide-modal-close">
+                        ¡Listo para empezar! 🚀
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="seguridad-guide-modal" class="modal guide-modal">
+        <div class="modal-content guide-modal-content">
+            <span class="close">&times;</span>
+            
+            <div class="guide-modal-header">
+                <div class="guide-modal-icon">🔒</div>
+                <div class="guide-modal-info">
+                    <span class="guide-modal-category seguridad">
+                        Seguridad
+                    </span>
+                    <h2>Seguridad y Wallets</h2>
+                    <p class="guide-modal-description">Aprende las mejores prácticas para proteger tus activos digitales de posibles amenazas.</p>
+                </div>
+            </div>
+
+            <div class="guide-modal-body">
+                <div class="guide-modal-content-text">
+                    <h3>🛡️ Protege Tus Activos Digitales</h3>
+                    <p>En el mundo cripto, tú eres tu propio banco. Esta libertad viene con la responsabilidad de proteger tus activos. Sigue estas prácticas esenciales.</p>
+
+                    <h4>🎯 Tipos de Wallets y Cuándo Usarlas</h4>
+                    <div class="wallets-comparison">
+                        <div class="wallet-type">
+                            <strong>📱 Hot Wallets (Conexión a Internet)</strong>
+                            <div class="pros-cons">
+                                <div class="pros">
+                                    <strong>Ventajas:</strong>
+                                    <ul>
+                                        <li>Fácil acceso y uso</li>
+                                        <li>Transacciones rápidas</li>
+                                        <li>Ideales para trading</li>
+                                    </ul>
+                                </div>
+                                <div class="cons">
+                                    <strong>Desventajas:</strong>
+                                    <ul>
+                                        <li>Vulnerable a hackeos</li>
+                                        <li>Depende de terceros</li>
+                                        <li>Menos seguras</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p><strong>💡 Recomendación:</strong> Usa solo para cantidades pequeñas que usarías como "efectivo digital".</p>
+                        </div>
+
+                        <div class="wallet-type">
+                            <strong>💽 Cold Wallets (Sin Conexión a Internet)</strong>
+                            <div class="pros-cons">
+                                <div class="pros">
+                                    <strong>Ventajas:</strong>
+                                    <ul>
+                                        <li>Máxima seguridad</li>
+                                        <li>Control total de claves</li>
+                                        <li>Inmunes a hackeos online</li>
+                                    </ul>
+                                </div>
+                                <div class="cons">
+                                    <strong>Desventajas:</strong>
+                                    <ul>
+                                        <li>Menos convenientes</li>
+                                        <li>Costo inicial</li>
+                                        <li>Responsabilidad total</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <p><strong>💡 Recomendación:</strong> Usa para ahorros a largo plazo y cantidades significativas.</p>
+                        </div>
+                    </div>
+
+                    <h4>🔐 Mejores Prácticas de Seguridad</h4>
+                    <div class="security-checklist">
+                        <div class="checklist-item">
+                            <span class="check">✅</span>
+                            <div>
+                                <strong>Autenticación 2FA en Todo</strong>
+                                <p>Activa 2FA en exchanges, email y cualquier servicio relacionado. Usa apps como Google Authenticator, no SMS.</p>
+                            </div>
+                        </div>
+                        <div class="checklist-item">
+                            <span class="check">✅</span>
+                            <div>
+                                <strong>Backup de Seed Phrases</strong>
+                                <p>Guarda tu frase semilla en lugares seguros físicos. Nunca la almacenes digitalmente.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="guide-modal-actions">
+                    <button class="btn btn-primary guide-modal-close">
+                        ¡Seguridad activada! 🔒
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="trading-basico-guide-modal" class="modal guide-modal">
+        <div class="modal-content guide-modal-content">
+            <span class="close">&times;</span>
+            
+            <div class="guide-modal-header">
+                <div class="guide-modal-icon">📈</div>
+                <div class="guide-modal-info">
+                    <span class="guide-modal-category trading">
+                        Trading
+                    </span>
+                    <h2>Trading Básico</h2>
+                    <p class="guide-modal-description">Conceptos fundamentales del trading: análisis técnico, fundamental y estrategias.</p>
+                </div>
+            </div>
+
+            <div class="guide-modal-body">
+                <div class="guide-modal-content-text">
+                    <h3>📊 Fundamentos del Trading Cripto</h3>
+                    <p>El trading de criptomonedas puede ser emocionante y rentable, pero requiere conocimiento y disciplina. Comienza con estos conceptos básicos.</p>
+
+                    <h4>🎯 Tipos de Análisis</h4>
+                    <div class="analysis-types">
+                        <div class="analysis">
+                            <strong>📈 Análisis Técnico</strong>
+                            <p>Estudio de gráficos y patrones de precios históricos para predecir movimientos futuros.</p>
+                            <ul>
+                                <li>Soportes y resistencias</li>
+                                <li>Indicadores técnicos (RSI, MACD)</li>
+                                <li>Patrones de velas</li>
+                                <li>Tendencias y canales</li>
+                            </ul>
+                        </div>
+                        <div class="analysis">
+                            <strong>📰 Análisis Fundamental</strong>
+                            <p>Evaluación del valor intrínseco de un proyecto basado en su tecnología, equipo y adopción.</p>
+                            <ul>
+                                <li>Tokenomics y utilidad</li>
+                                <li>Equipo y desarrollo</li>
+                                <li>Adopción y comunidad</li>
+                                <li>Noticias y eventos</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h4>💡 Estrategias para Principiantes</h4>
+                    <div class="strategies">
+                        <div class="strategy">
+                            <strong>💎 HODL (Buy and Hold)</strong>
+                            <p>Comprar y mantener a largo plazo, independientemente de la volatilidad.</p>
+                            <p><em>Ventaja: Menos estrés, exposición a crecimiento a largo plazo</em></p>
+                        </div>
+                        <div class="strategy">
+                            <strong>⚡ DCA (Dollar Cost Averaging)</strong>
+                            <p>Invertir cantidades fijas regularmente para promediar el precio de compra.</p>
+                            <p><em>Ventaja: Reduce el riesgo de timing del mercado</em></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="guide-modal-actions">
+                    <button class="btn btn-primary guide-modal-close">
+                        ¡A tradear! 📈
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/Fronted/Funtion/main.js"></script>
+   <script src="/Fronted/Funtion/api-system.js"></script>
+<script src="/Fronted/Funtion/header-manager.js"></script>
+    
+  
+   
+   
+    
+</body>
+</html>

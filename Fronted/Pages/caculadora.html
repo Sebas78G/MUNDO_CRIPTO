@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+      <link rel="stylesheet" href="/Fronted/Style/stylesC.css">
+</head>
+<body>
+        <!-- Después de la sección de Educación -->
+<section id="calculadora" class="section calculator-section">
+    <div class="container">
+        <h2 class="section-title">Calculadora de Inversiones</h2>
+        <p class="section-subtitle">Simula tus posibles ganancias en criptomonedas</p>
+        
+        <div class="calculator-container">
+            <div class="calculator-form">
+                <div class="form-group">
+                    <label>Criptomoneda</label>
+                    <select id="calcCrypto" class="crypto-select">
+                        <option value="BTC">Bitcoin (BTC)</option>
+                        <option value="ETH">Ethereum (ETH)</option>
+                        <option value="ADA">Cardano (ADA)</option>
+                        <option value="SOL">Solana (SOL)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Monto de Inversión (USD)</label>
+                    <input type="number" id="calcAmount" placeholder="1000" min="1">
+                </div>
+                
+                <div class="form-group">
+                    <label>Período de Inversión</label>
+                    <select id="calcPeriod">
+                        <option value="30">1 mes</option>
+                        <option value="90">3 meses</option>
+                        <option value="180">6 meses</option>
+                        <option value="365">1 año</option>
+                        <option value="730">2 años</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Tipo de Inversión</label>
+                    <div class="investment-type">
+                        <label class="radio-label">
+                            <input type="radio" name="investmentType" value="lump" checked>
+                            Inversión única
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="investmentType" value="dca">
+                            DCA (Inversión mensual)
+                        </label>
+                    </div>
+                </div>
+                
+                <button id="calculateBtn" class="btn btn-primary btn-large">
+                    Calcular Inversión
+                </button>
+            </div>
+            
+            <div class="calculator-results">
+                <div class="result-card">
+                    <h4>Resultado de la Simulación</h4>
+                    <div class="result-item">
+                        <span>Inversión Total:</span>
+                        <span id="totalInvestment">$0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Valor Actual:</span>
+                        <span id="currentValue">$0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>Ganancia/Pérdida:</span>
+                        <span id="profitLoss">$0</span>
+                    </div>
+                    <div class="result-item">
+                        <span>ROI:</span>
+                        <span id="roiPercentage">0%</span>
+                    </div>
+                    <div class="result-chart">
+                        <canvas id="calcChart"></canvas>
+                    </div>
+                    
+                    <button id="saveSimulation" class="btn btn-outline" style="display: none;">
+                        Guardar Simulación
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+ <script src="/Fronted/Funtion/calculadora.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio - Mundo Cripto</title>
+    <link rel="stylesheet" href="../Style/styleP.css">
+    <link rel="stylesheet" href="../Style/styleP.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+   <header class="header">
+        <div class="container">
+            <h1 class="logo">Mundo Cripto</h1>
+            <nav class="nav">
+                <a href="../index.html" class="nav-link">Inicio</a>
+                <a href="graficos.html" class="nav-link">Gráficos</a>
+                <a href="Portafolio.html" class="nav-link active">Portafolio</a>
+                <a href="perfil.html" class="nav-link">Perfil</a>
+                
+                <div class="auth-section">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">    
+
+        <div class="setup-modal" id="setup-modal">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h2>🚀 Configuración Inicial</h2>
+        </div>
+        <div class="modal-body">
+            <p>Establece tu capital inicial para comenzar a tradear</p>
+            <div class="form-group">
+                <label for="initial-balance">Capital Inicial (USD):</label>
+                <input type="number" id="initial-balance" min="100" max="1000000" value="5000" step="100">
+                <div class="balance-presets">
+                    <button type="button" data-amount="1000">$1,000</button>
+                    <button type="button" data-amount="5000">$5,000</button>
+                    <button type="button" data-amount="10000">$10,000</button>
+                </div>
+            </div>
+            <button id="start-trading" class="primary-btn">
+                <i class="fas fa-rocket"></i> Comenzar a Tradear
+            </button>
+        </div>
+    </div>
+</div>
+
+        <div class="dashboard">
+            <div class="balance-card">
+                <h2>Balance Total</h2>
+                <p class="balance-amount">$<span id="total-balance">0.00</span></p>
+                <div class="profit-loss">
+                    <span id="total-profit">+$0.00</span>
+                    <span id="profit-percentage">(0.00%)</span>
+                </div>
+                <div class="balance-details">
+                    <div class="detail-item">
+                        <span>Disponible:</span>
+                        <span>$<span id="available-balance">0.00</span></span>
+                    </div>
+                    <div class="detail-item">
+                        <span>Invertido:</span>
+                        <span>$<span id="invested-amount">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="market-overview">
+                <h2>Mercado en Tiempo Real <i class="fas fa-sync-alt" id="refresh-prices"></i></h2>
+                <div id="market-prices" class="market-prices">
+                    <!-- Los precios se cargarán dinámicamente -->
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="portfolio-section">
+                <div class="section-header">
+                    <h2>Tu Portafolio</h2>
+                    <button id="sell-modal-btn" class="secondary-btn" disabled>
+                        <i class="fas fa-coins"></i> Vender Cripto
+                    </button>
+                </div>
+                <div class="portfolio-list" id="portfolio-list">
+                    <div class="empty-portfolio" id="empty-portfolio">
+                        <i class="fas fa-wallet"></i>
+                        <p>No tienes inversiones aún. ¡Compra tu primera criptomoneda!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="trading-section">
+                <h2>Realizar Inversión</h2>
+                <div class="trade-form">
+                    <div class="form-group">
+                        <label for="crypto-select">Seleccionar Criptomoneda:</label>
+                        <select id="crypto-select">
+                            <!-- Las opciones se cargarán dinámicamente -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="investment-amount">Monto de Inversión ($):</label>
+                        <input type="number" id="investment-amount" min="10" value="100">
+                        <div class="amount-buttons">
+                            <button type="button" data-percent="25">25%</button>
+                            <button type="button" data-percent="50">50%</button>
+                            <button type="button" data-percent="100">100%</button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="crypto-amount">Cantidad a comprar:</label>
+                        <input type="text" id="crypto-amount" readonly>
+                    </div>
+
+                    <div class="fee-notice">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Comisión de trading: 0.25%</span>
+                    </div>
+                    
+                    <button id="buy-button" class="primary-btn">
+                        <i class="fas fa-shopping-cart"></i> Comprar
+                    </button>
+                </div>
+
+                <div class="withdraw-section">
+                    <h3>Retirar Fondos</h3>
+                    <div class="form-group">
+                        <label for="withdraw-amount">Monto a retirar ($):</label>
+                        <input type="number" id="withdraw-amount" min="10" value="100">
+                    </div>
+                    <div class="fee-notice">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Comisión por retiro: 1.5% (mín. $5)</span>
+                    </div>
+                    <button id="withdraw-button" class="secondary-btn">
+                        <i class="fas fa-hand-holding-usd"></i> Retirar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="transaction-history">
+            <h2>Historial de Transacciones</h2>
+            <div class="history-list" id="transaction-history">
+                <!-- Las transacciones se cargarán dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para vender criptomonedas -->
+    <div class="modal" id="sell-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Vender Criptomoneda</h2>
+                <button class="close-modal" id="close-sell-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="sell-crypto-select">Seleccionar inversión:</label>
+                    <select id="sell-crypto-select">
+                        <!-- Las opciones se cargarán dinámicamente -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="sell-percentage">Porcentaje a vender:</label>
+                    <input type="range" id="sell-percentage" min="1" max="100" value="100">
+                    <div class="percentage-display">
+                        <span id="sell-percentage-value">100%</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Valor actual:</label>
+                    <input type="text" id="sell-current-value" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Ganancia/Pérdida:</label>
+                    <input type="text" id="sell-profit" readonly>
+                </div>
+                <div class="fee-notice">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Comisión de trading: 0.25%</span>
+                </div>
+                <button id="confirm-sell" class="primary-btn">
+                    <i class="fas fa-money-bill-wave"></i> Confirmar Venta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/Fronted/Funtion/api-system.js"></script>
+    <script src="/Fronted/Funtion/header-manager.js"></script>
+    <script src="/Fronted/Funtion/portafolio.js"></script>
+    <script src="../Funtion/portafolio-bd.js"></script>
+   
+</body>
+</html>

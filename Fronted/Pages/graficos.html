@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráficos en Tiempo Real - Mundo Cripto</title>
+    <link rel="stylesheet" href="/Fronted/Style/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+  <header class="header">
+    <div class="container">
+        <h1 class="logo">Mundo Cripto</h1>
+        <nav class="nav">
+            <a href="/Fronted/index.html" class="nav-link">Inicio</a>
+            <a href="/Fronted/Pages/graficos.html" class="nav-link active">Graficos</a>
+            <a href="/Fronted/Pages/Portafolio.html" class="nav-link">Portafolio</a>
+            <a href="/Fronted/Pages/perfil.html" class="nav-link">Perfil</a>
+            
+            <div class="auth-section">
+                <!-- Se llenará automáticamente con JavaScript -->
+            </div>
+        </nav>
+    </div>
+</header>
+
+
+
+    <!-- Charts Hero -->
+    <section class="charts-hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Gráficos en Tiempo Real</h1>
+                <p>Análisis técnico profesional con herramientas avanzadas de trading</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Charts Section -->
+    <section class="section">
+        <div class="container">
+            <!-- Currency Selector -->
+           <div class="currency-selector">
+    <button class="currency-btn active" data-currency="BTC">
+        <span class="crypto-symbol">BTC</span>
+        Bitcoin
+    </button>
+    <button class="currency-btn" data-currency="ETH">
+        <span class="crypto-symbol">ETH</span>
+        Ethereum
+    </button>
+    <button class="currency-btn" data-currency="ADA">
+        <span class="crypto-symbol">ADA</span>
+        Cardano
+    </button>
+    <button class="currency-btn" data-currency="SOL">
+        <span class="crypto-symbol">SOL</span>
+        Solana
+    </button>
+    <button class="currency-btn" data-currency="DOGE">
+        <span class="crypto-symbol">DOGE</span>
+        Dogecoin
+    </button>
+    <button class="currency-btn" data-currency="XRP">
+        <span class="crypto-symbol">XRP</span>
+        Ripple
+    </button>
+    <button class="currency-btn" data-currency="DOT">
+        <span class="crypto-symbol">DOT</span>
+        Polkadot
+    </button>
+    <button class="currency-btn" data-currency="LTC">
+        <span class="crypto-symbol">LTC</span>
+        Litecoin
+    </button>
+    <button class="currency-btn" data-currency="LINK">
+        <span class="crypto-symbol">LINK</span>
+        Chainlink
+    </button>
+    <button class="currency-btn" data-currency="XLM">
+        <span class="crypto-symbol">XLM</span>
+        Stellar
+    </button>
+    <button class="currency-btn" data-currency="XMR">
+        <span class="crypto-symbol">XMR</span>
+        Monero
+    </button>
+    <button class="currency-btn" data-currency="XTZ">
+        <span class="crypto-symbol">XTZ</span>
+        Tezos
+    </button>
+    <button class="currency-btn" data-currency="EOS">
+        <span class="crypto-symbol">EOS</span>
+        EOS
+    </button>
+    <button class="currency-btn" data-currency="TRX">
+        <span class="crypto-symbol">TRX</span>
+        Tron
+    </button>
+    <button class="currency-btn" data-currency="NEO">
+        <span class="crypto-symbol">NEO</span>
+        Neo
+    </button>
+    <button class="currency-btn" data-currency="VET">
+        <span class="crypto-symbol">VET</span>
+        Vechain
+    </button>
+    <button class="currency-btn" data-currency="ATOM">
+        <span class="crypto-symbol">ATOM</span>
+        Cosmos
+    </button>
+    <button class="currency-btn" data-currency="ALGO">
+        <span class="crypto-symbol">ALGO</span>
+        Algorand
+    </button>
+    <button class="currency-btn" data-currency="FIL">
+        <span class="crypto-symbol">FIL</span>
+        Filecoin
+    </button>
+    <button class="currency-btn" data-currency="AVAX">
+        <span class="crypto-symbol">AVAX</span>
+        Avalanche
+    </button>
+    <button class="currency-btn" data-currency="BNB">
+        <span class="crypto-symbol">BNB</span>
+        Binance Coin
+    </button>
+    <button class="currency-btn" data-currency="MATIC">
+        <span class="crypto-symbol">MATIC</span>
+        Polygon
+    </button>
+</div>
+            
+            <!-- Chart Container -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-title">
+                        <h3 id="currentChartTitle">Bitcoin (BTC/USD)</h3>
+                        <div class="price-display">
+                            <span class="current-price">$67,432.15</span>
+                            <span class="price-change positive">+2.34%</span>
+                        </div>
+                    </div>
+                    <div class="chart-controls">
+                        <div class="timeframe-selector">
+                            <button class="timeframe-btn active" data-timeframe="1h">1H</button>
+                            <button class="timeframe-btn" data-timeframe="4h">4H</button>
+                            <button class="timeframe-btn" data-timeframe="1d">1D</button>
+                            <button class="timeframe-btn" data-timeframe="1w">1S</button>
+                            <button class="timeframe-btn" data-timeframe="1m">1M</button>
+                        </div>
+                        <div class="chart-actions">
+                            <button class="chart-action-btn" title="Indicadores">📊</button>
+                            <button class="chart-action-btn" title="Dibujar">✏️</button>
+                            <button class="chart-action-btn" title="Comparar">🔍</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-wrapper">
+                    <canvas id="tradingChart" width="800" height="400"></canvas>
+                </div>
+                
+                <div class="chart-footer">
+                    <div class="volume-info">
+                        <span>Volumen 24h: <strong>$45.2B</strong></span>
+                        <span>Cap. de mercado: <strong>$2.9T</strong></span>
+                    </div>
+                    <div class="time-info">
+                        <span id="lastUpdate">Actualizado hace 5 segundos</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Technical Indicators -->
+            <div class="indicators-grid">
+                <div class="indicator-card">
+                    <h5>RSI</h5>
+                    <div class="indicator-value rsi-value">62.5</div>
+                    <div class="indicator-status rsi-status neutral">Neutral</div>
+                    <div class="indicator-desc">Momentum</div>
+                </div>
+                <div class="indicator-card">
+                    <h5>MACD</h5>
+                    <div class="indicator-value macd-value">+125.3</div>
+                    <div class="indicator-status positive">Alcista</div>
+                    <div class="indicator-desc">Tendencia</div>
+                </div>
+                <div class="indicator-card">
+                    <h5>Media Móvil 50</h5>
+                    <div class="indicator-value">$64,920</div>
+                    <div class="indicator-status positive">Soporte</div>
+                    <div class="indicator-desc">Soporte/Resistencia</div>
+                </div>
+                <div class="indicator-card">
+                    <h5>Volumen</h5>
+                    <div class="indicator-value volume-value">Alto</div>
+                    <div class="indicator-status positive">Confirmación</div>
+                    <div class="indicator-desc">Interés</div>
+                </div>
+            </div>
+
+            <!-- Additional Charts -->
+            <div class="additional-charts">
+                <h3>Más Herramientas</h3>
+                <div class="charts-grid">
+                    <div class="mini-chart">
+                        <h4>Profundidad de Mercado</h4>
+                        <div class="chart-wrapper-mini">
+                            <canvas id="depthChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                    <div class="mini-chart">
+                        <h4>Volumen por Exchange</h4>
+                        <div class="chart-wrapper-mini">
+                            <canvas id="volumeChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Back to Home -->
+    <section class="section">
+        <div class="container">
+            <div class="back-home">
+                <a href="../index.html" class="btn btn-outline">← Volver al Inicio</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Mundo Cripto</h3>
+                    <p>Análisis profesional en tiempo real.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces</h4>
+                    <ul>
+                        <li><a href="../index.html">Inicio</a></li>
+                        <li><a href="/Fronted/Pages/Portafolio.html">Portafolio</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Mundo Cripto. Datos con fines educativos.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/Fronted/Funtion/graficos.js"></script>
+    <script src="/Fronted/Funtion/api-system.js"></script>
+<script src="/Fronted/Funtion/header-manager.js"></script>
+</body>
+</html>

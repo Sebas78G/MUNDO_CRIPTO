@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Mundo Cripto</title>
+    <link rel="stylesheet" href="/Fronted/Style/perfil.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1 class="logo">Mundo Cripto</h1>
+            <a href="../index.html">Inicio</a>
+            <a href="/Fronted/Pages/graficos.html">Graficos</a>
+            <a href="/Fronted/Pages/Portafolio.html">Portafolio</a>
+            <nav class="nav">
+                <div class="user-info">
+                    <span class="user-welcome">Bienvenido, <span id="userName">Usuario</span></span>
+                    <button id="logoutBtn" class="btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Cerrar Sesión
+                    </button>
+                </div>
+                
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Sección de Bienvenida -->
+            <section class="welcome-section">
+                <div class="welcome-card">
+                    <div class="avatar">
+                        <span id="userInitial">U</span>
+                    </div>
+                    <h2 id="welcomeMessage">Bienvenido, Usuario</h2>
+                    <p class="user-email" id="userEmail">usuario@email.com</p>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-info">
+                                <h3>Portafolio</h3>
+                                <p class="stat-value">$0.00</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-info">
+                                <h3>Inversiones</h3>
+                                <p class="stat-value">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">🕒</div>
+                            <div class="stat-info">
+                                <h3>Miembro desde</h3>
+                                <p class="stat-value" id="memberSince">Hoy</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección de Configuración -->
+            <section class="settings-section">
+                <h2 class="section-title">Configuración de Cuenta</h2>
+                <div class="settings-grid">
+                    <div class="setting-card">
+                        <div class="setting-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <div class="setting-info">
+                            <h3>Editar Perfil</h3>
+                            <p>Actualiza tu información personal</p>
+                        </div>
+                        <button class="btn btn-outline setting-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="setting-card">
+                        <div class="setting-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="setting-info">
+                            <h3>Seguridad</h3>
+                            <p>Cambia tu contraseña y configura 2FA</p>
+                        </div>
+                        <button class="btn btn-outline setting-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="setting-card">
+                        <div class="setting-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="setting-info">
+                            <h3>Notificaciones</h3>
+                            <p>Configura tus preferencias de alertas</p>
+                        </div>
+                        <button class="btn btn-outline setting-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div class="setting-card">
+                        <div class="setting-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="setting-info">
+                            <h3>Mis Wallets</h3>
+                            <p>Gestiona tus billeteras conectadas</p>
+                        </div>
+                        <button class="btn btn-outline setting-btn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal de Confirmación de Logout -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>¿Cerrar Sesión?</h3>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que quieres cerrar tu sesión?</p>
+            </div>
+            <div class="modal-actions">
+                <button id="confirmLogout" class="btn btn-danger">Sí, Cerrar Sesión</button>
+                <button id="cancelLogout" class="btn btn-outline">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="/Fronted/Funtion/api-system.js"></script>
+    <script src="/Fronted/Funtion/perfil.js"></script>
+</body>
+</html>
