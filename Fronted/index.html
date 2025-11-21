@@ -5,27 +5,365 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mundo Cripto</title>
     <link rel="stylesheet" href="/Fronted/Style/styles.css">
-        <link rel="stylesheet" href="/Fronted/Style/header.css">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/Fronted/Style/portafolio-buttons.css">
+
+    <style>
+        /* Estilos específicos para la página principal */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Específico para index */
+        .main-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .main-header .logo {
+            color: #4cc9f0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .main-header .nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .main-header .nav-link {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .main-header .nav-link:hover,
+        .main-header .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #4cc9f0;
+        }
+
+        .main-header .auth-section {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* Botones de la página principal */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4cc9f0, #3aa8d8);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid #4cc9f0;
+        }
+
+        .btn-outline:hover {
+            background: #4cc9f0;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-large {
+            padding: 15px 35px;
+            font-size: 1.1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+
+        .hero-content h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        /* Secciones */
+        .section {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #1a1a2e;
+        }
+
+        .news-grid, .market-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .news-card, .market-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .news-card:hover, .market-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .market-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+
+        .education-section {
+            background: white;
+        }
+
+        /* Modales */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            animation: modalFade 0.3s;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .modal h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #1a1a2e;
+            font-size: 1.8rem;
+        }
+
+        /* Formularios */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #f8fafc;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4cc9f0;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.1);
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .auth-switch a {
+            color: #4cc9f0;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .auth-switch a:hover {
+            color: #3aa8d8;
+            text-decoration: underline;
+        }
+
+        /* Mensajes */
+        .error-message {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .error-message:not(.hidden) {
+            display: block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-header .container {
+                flex-direction: column;
+            }
+            
+            .main-header .nav {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero-content h2 {
+                font-size: 2rem;
+            }
+            
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn-large {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
-<header class="header">
-    <div class="container">
-        <h1 class="logo">Mundo Cripto</h1>
-        <nav class="nav">
-            <a href="#inicio" class="nav-link active">Inicio</a>
-            <a href="/Fronted/Pages/graficos.html" class="nav-link">Graficos</a>
-            <a href="/Fronted/Pages/Portafolio.html" class="nav-link">Portafolio</a>
-            <a href="/Fronted/Pages/perfil.html" class="nav-link">Perfil</a>
-            
-            <div class="auth-section">
-                <!-- Se llenará automáticamente con JavaScript -->
-            </div>
-        </nav>
-    </div>
-</header>
+    <header class="main-header">
+        <div class="container">
+            <h1 class="logo">💎 Mundo Cripto</h1>
+            <nav class="nav">
+                <a href="#inicio" class="nav-link active">Inicio</a>
+                <a href="/Fronted/Pages/graficos.html" class="nav-link">Gráficos</a>
+                <a href="/Fronted/Pages/Portafolio.html" class="nav-link">Portafolio</a>
+                <a href="/Fronted/Pages/perfil.html" class="nav-link">Perfil</a>
+                
+                <div class="auth-section">
+                    <div id="authButtons">
+                        <button id="loginBtn" class="btn btn-outline">Iniciar Sesión</button>
+                        <button id="registerBtn" class="btn btn-primary">Registrarse</button>
+                    </div>
+                    <div id="userInfo" class="hidden"></div>
+                </div>
+            </nav>
+        </div>
+    </header>
 
     <!-- Hero Section -->
     <section id="inicio" class="hero">
@@ -34,8 +372,8 @@
                 <h2>El futuro financiero es digital</h2>
                 <p>Descubre el mundo de las criptomonedas con información actualizada y herramientas profesionales.</p>
                 <div class="hero-actions">
-                    <button class="btn btn-large">Explorar Mercado</button>
-                    <button class="btn btn-outline">Aprender Más</button>
+                    <button class="btn btn-primary btn-large">Explorar Mercado</button>
+                    <button class="btn btn-outline btn-large">Aprender Más</button>
                 </div>
             </div>
         </div>
@@ -75,473 +413,371 @@
         </div>
     </section>
 
-    <!-- Nueva Sección de Educación -->
+    <!-- Sección de Educación -->
     <section id="educacion" class="section education-section">
         <div class="container">
             <h2 class="section-title">Centro de Educación Cripto</h2>
-            <p class="section-subtitle">Aprende desde cero hasta nivel avanzado con nuestros recursos educativos</p>
-            
-            <div class="education-levels">
-                <div class="level-tabs">
-                    <button class="level-tab active" data-level="beginner">Principiante 🚀</button>
-                    <button class="level-tab" data-level="intermediate">Intermedio 📈</button>
-                    <button class="level-tab" data-level="advanced">Avanzado 💎</button>
-                </div>
-                
-                <div class="level-content active" id="beginner-content">
-                    <div class="guides-grid">
-                        <div class="guide-card">
-                            <div class="guide-icon">🔗</div>
-                            <h3>¿Qué es Blockchain?</h3>
-                            <p>Descubre la tecnología que está revolucionando no solo las finanzas, sino múltiples industrias.</p>
-                            <button class="btn btn-outline learn-btn" data-guide-id="blockchain-guide">
-                                Aprender ↓
-                            </button>
-                        </div>
-                        
-                        <div class="guide-card">
-                            <div class="guide-icon">🚀</div>
-                            <h3>Primeros Pasos en Cripto</h3>
-                            <p>Guía completa para empezar tu viaje en el mundo de las criptomonedas de forma segura.</p>
-                            <button class="btn btn-outline learn-btn" data-guide-id="primeros-pasos-guide">
-                                Aprender ↓
-                            </button>
-                        </div>
-                        
-                        <div class="guide-card">
-                            <div class="guide-icon">🔒</div>
-                            <h3>Seguridad y Wallets</h3>
-                            <p>Aprende las mejores prácticas para proteger tus activos digitales de posibles amenazas.</p>
-                            <button class="btn btn-outline learn-btn" data-guide-id="seguridad-guide">
-                                Aprender ↓
-                            </button>
-                        </div>
-                        
-                        <div class="guide-card">
-                            <div class="guide-icon">📈</div>
-                            <h3>Trading Básico</h3>
-                            <p>Conceptos fundamentales del trading: análisis técnico, fundamental y estrategias.</p>
-                            <button class="btn btn-outline learn-btn" data-guide-id="trading-basico-guide">
-                                Aprender ↓
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="level-content" id="intermediate-content">
-                    <div class="guides-grid">
-                        <div class="guide-card">
-                            <div class="guide-icon">🔄</div>
-                            <h3>DeFi - Finanzas Descentralizadas</h3>
-                            <p>Aprende sobre lending, borrowing, yield farming y los principales protocolos DeFi.</p>
-                            <button class="btn btn-outline learn-btn" data-guide-id="defi-guide">
-                                Aprender ↓
-                            </button>
-                        </div>
-                        
-                        <div class="guide-card">
-                            <div class="guide-icon">🎨</div>
-                            <h3>NFTs y Metaverso</h3>
-                            <p>Descubre el mundo de los tokens no fungibles, coleccionables digitales y oportunidades.</p>
-                            <button class="btn btn-outline learn-btn" data-guide-id="nft-guide">
-                                Aprender ↓
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="level-content" id="advanced-content">
-                    <div class="guides-grid">
-                        <div class="guide-card">
-                            <div class="guide-icon">🔧</div>
-                            <h3>Smart Contracts</h3>
-                            <p>Programación de contratos inteligentes en Solidity y desarrollo DApps.</p>
-                            <button class="btn btn-outline learn-btn" data-guide-id="smart-contracts-guide">
-                                Aprender ↓
-                            </button>
-                        </div>
-                        
-                        <div class="guide-card">
-                            <div class="guide-icon">🛠️</div>
-                            <h3>Arbitraje y Trading Avanzado</h3>
-                            <p>Estrategias complejas, bots de trading y análisis cuantitativo.</p>
-                            <button class="btn btn-outline learn-btn" data-guide-id="arbitraje-guide">
-                                Aprender ↓
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <p style="text-align: center; color: #666; margin-bottom: 2rem;">Aprende desde cero hasta nivel avanzado con nuestros recursos educativos</p>
         </div>
     </section>
 
-    <!-- Modales de Autenticación -->
+    <section id="planes" class="section plans-section">
+    <div class="container">
+        <h2 class="section-title">🚀 Planes de Aprendizaje</h2>
+        <p class="section-subtitle">Elige el plan perfecto para comenzar tu viaje en el mundo cripto</p>
+        
+        <div class="plans-grid">
+            <!-- Plan Gratis -->
+            <div class="plan-card plan-free">
+                <div class="plan-badge">Gratis</div>
+                <div class="plan-icon">🎓</div>
+                <h3 class="plan-title">Principiante</h3>
+                <div class="plan-price">
+                    <span class="price-amount">$0</span>
+                    <span class="price-period">/mes</span>
+                </div>
+                <p class="plan-description">Perfecto para empezar a aprender sobre criptomonedas</p>
+                
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Acceso a guías básicas</li>
+                    <li><i class="fas fa-check"></i> Simulador de trading básico</li>
+                    <li><i class="fas fa-check"></i> Gráficos en tiempo real</li>
+                    <li><i class="fas fa-check"></i> Portafolio virtual ($5,000)</li>
+                    <li><i class="fas fa-check"></i> Comunidad de aprendizaje</li>
+                </ul>
+                
+                <button class="btn btn-outline btn-plan">
+                    <i class="fas fa-rocket"></i>
+                    Comenzar Gratis
+                </button>
+            </div>
+
+            <!-- Plan Pro -->
+            <div class="plan-card plan-pro">
+                <div class="plan-badge popular">Más Popular</div>
+                <div class="plan-icon">💎</div>
+                <h3 class="plan-title">Pro</h3>
+                <div class="plan-price">
+                    <span class="price-amount">$29</span>
+                    <span class="price-period">/mes</span>
+                </div>
+                <p class="plan-description">Para traders que quieren llevar sus habilidades al siguiente nivel</p>
+                
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Todo de Principiante +</li>
+                    <li><i class="fas fa-check"></i> Análisis técnico avanzado</li>
+                    <li><i class="fas fa-check"></i> Indicadores profesionales</li>
+                    <li><i class="fas fa-check"></i> Portafolio virtual ($50,000)</li>
+                    <li><i class="fas fa-check"></i> Alertas de precio en tiempo real</li>
+                    <li><i class="fas fa-check"></i> Asesoría 1:1 mensual</li>
+                    <li><i class="fas fa-check"></i> Acceso a webinars exclusivos</li>
+                </ul>
+                
+                <button class="btn btn-primary btn-plan">
+                    <i class="fas fa-crown"></i>
+                    Comenzar Pro
+                </button>
+            </div>
+
+            <!-- Plan Premium -->
+            <div class="plan-card plan-premium">
+                <div class="plan-badge">Premium</div>
+                <div class="plan-icon">👑</div>
+                <h3 class="plan-title">Premium</h3>
+                <div class="plan-price">
+                    <span class="price-amount">$99</span>
+                    <span class="price-period">/mes</span>
+                </div>
+                <p class="plan-description">La experiencia completa para traders profesionales</p>
+                
+                <ul class="plan-features">
+                    <li><i class="fas fa-check"></i> Todo de Pro +</li>
+                    <li><i class="fas fa-check"></i> Trading con dinero real (API)</li>
+                    <li><i class="fas fa-check"></i> Bots de trading automatizados</li>
+                    <li><i class="fas fa-check"></i> Portafolio ilimitado</li>
+                    <li><i class="fas fa-check"></i> Dashboard analytics avanzado</li>
+                    <li><i class="fas fa-check"></i> Asesoría 1:1 semanal</li>
+                    <li><i class="fas fa-check"></i> Acceso a estrategias premium</li>
+                    <li><i class="fas fa-check"></i> Soporte prioritario 24/7</li>
+                </ul>
+                
+                <button class="btn btn-primary btn-plan">
+                    <i class="fas fa-star"></i>
+                    Comenzar Premium
+                </button>
+            </div>
+        </div>
+
+        <!-- Comparación de Planes -->
+        <div class="plans-comparison">
+            <h3>¿No estás seguro? Compara los planes</h3>
+            <button class="btn btn-outline" onclick="showComparisonTable()">
+                <i class="fas fa-table"></i>
+                Ver Tabla Comparativa
+            </button>
+        </div>
+    </div>
+</section>
+
+<style>
+/* Estilos para la sección de planes */
+.plans-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 5rem 0;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #64748b;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+}
+
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.plan-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.plan-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.plan-pro {
+    border-color: #667eea;
+    transform: scale(1.05);
+}
+
+.plan-pro:hover {
+    transform: scale(1.08) translateY(-10px);
+}
+
+.plan-badge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.plan-badge.popular {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.plan-icon {
+    font-size: 4rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.plan-title {
+    font-size: 1.8rem;
+    text-align: center;
+    color: #1a1a2e;
+    margin-bottom: 1rem;
+}
+
+.plan-price {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.price-amount {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.price-period {
+    color: #64748b;
+    font-size: 1rem;
+}
+
+.plan-description {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 2rem;
+    min-height: 3rem;
+}
+
+.plan-features {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 2rem;
+}
+
+.plan-features li {
+    padding: 0.75rem 0;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.plan-features i {
+    color: #10b981;
+    font-size: 1.1rem;
+}
+
+.btn-plan {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.plans-comparison {
+    text-align: center;
+    margin-top: 4rem;
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.plans-comparison h3 {
+    color: #1a1a2e;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .plan-pro {
+        transform: scale(1);
+    }
+    
+    .plan-pro:hover {
+        transform: translateY(-10px);
+    }
+}
+</style>
+
+<script>
+// Función para mostrar tabla comparativa (placeholder)
+function showComparisonTable() {
+    alert('📊 Tabla comparativa:\n\n✅ Gratis: Ideal para comenzar\n💎 Pro: Herramientas avanzadas\n👑 Premium: Experiencia completa\n\n¡Elige el plan que mejor se adapte a ti!');
+}
+
+// Manejar clics en botones de planes
+document.addEventListener('DOMContentLoaded', function() {
+    const planButtons = document.querySelectorAll('.btn-plan');
+    
+    planButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const planCard = this.closest('.plan-card');
+            const planTitle = planCard.querySelector('.plan-title').textContent;
+            const planPrice = planCard.querySelector('.price-amount').textContent;
+            
+            if (planPrice === '$0') {
+                // Plan gratis - redirigir a registro
+                const registerBtn = document.getElementById('registerBtn');
+                if (registerBtn) {
+                    registerBtn.click();
+                }
+            } else {
+                // Planes de pago - mostrar mensaje
+                alert(`🎯 Has seleccionado el plan ${planTitle}\n\nPrecio: ${planPrice}/mes\n\n¡Pronto podrás suscribirte! Por ahora, regístrate gratis para comenzar.`);
+            }
+        });
+    });
+});
+</script>
+
+    <!-- Modal de Login -->
     <div id="loginModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Iniciar Sesión</h2>
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="loginEmail">Correo Electrónico</label>
-                <input type="email" id="loginEmail" placeholder="tu@email.com" required>
-            </div>
-            <div class="form-group">
-                <label for="loginPassword">Contraseña</label>
-                <input type="password" id="loginPassword" placeholder="Tu contraseña" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-full">Iniciar Sesión</button>
-        </form>
-        <p class="auth-switch">
-            ¿No tienes cuenta? <a href="#" id="switchToRegister">Regístrate aquí</a>
-        </p>
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Iniciar Sesión</h2>
+            
+            <div id="loginError" class="error-message hidden"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Correo Electrónico</label>
+                    <input type="email" id="loginEmail" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" placeholder="Tu contraseña" required>
+                </div>
+                <button type="submit" id="loginSubmit" class="btn btn-primary btn-full">
+                    Iniciar Sesión
+                </button>
+            </form>
+            <p class="auth-switch">
+                ¿No tienes cuenta? <a href="#" id="switchToRegister">Regístrate aquí</a>
+            </p>
+        </div>
     </div>
-</div>
 
-
+    <!-- Modal de Registro -->
     <div id="registerModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Crear Cuenta</h2>
-        <form id="registerForm">
-            <div class="form-group">
-                <label for="registerName">Nombre Completo</label>
-                <input type="text" id="registerName" placeholder="Tu nombre completo" required>
-            </div>
-            <div class="form-group">
-                <label for="registerEmail">Correo Electrónico</label>
-                <input type="email" id="registerEmail" placeholder="tu@email.com" required>
-            </div>
-            <div class="form-group">
-                <label for="registerPassword">Contraseña</label>
-                <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
-            </div>
-            <div class="form-group">
-                <label for="registerConfirmPassword">Confirmar Contraseña</label>
-                <input type="password" id="registerConfirmPassword" placeholder="Repite tu contraseña" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-full">Crear Cuenta</button>
-        </form>
-        <p class="auth-switch">
-            ¿Ya tienes cuenta? <a href="#" id="switchToLogin">Inicia sesión aquí</a>
-        </p>
-    </div>
-</div>
-
-    <!-- Modales Educativos -->
-    <div id="blockchain-guide-modal" class="modal guide-modal">
-        <div class="modal-content guide-modal-content">
+        <div class="modal-content">
             <span class="close">&times;</span>
+            <h2>Crear Cuenta</h2>
             
-            <div class="guide-modal-header">
-                <div class="guide-modal-icon">🔗</div>
-                <div class="guide-modal-info">
-                    <span class="guide-modal-category tecnologia">
-                        Tecnología
-                    </span>
-                    <h2>¿Qué es Blockchain?</h2>
-                    <p class="guide-modal-description">Descubre la tecnología que está revolucionando no solo las finanzas, sino múltiples industrias.</p>
-                </div>
-            </div>
-
-            <div class="guide-modal-body">
-                <div class="guide-modal-content-text">
-                    <h3>🚀 La Revolución Blockchain</h3>
-                    <p>Blockchain es una tecnología de registro distribuido que almacena información en bloques encadenados cronológicamente. Es la base tecnológica detrás de Bitcoin, Ethereum y todas las criptomonedas.</p>
-
-                    <h4>🎯 Características Fundamentales</h4>
-                    <ul>
-                        <li><strong>Descentralizada:</strong> No controlada por una sola entidad o autoridad central</li>
-                        <li><strong>Inmutable:</strong> Los datos una vez escritos no pueden ser alterados o eliminados</li>
-                        <li><strong>Transparente:</strong> Todas las transacciones son visibles para los participantes</li>
-                        <li><strong>Segura:</strong> Protegida por criptografía avanzada y consenso distribuido</li>
-                    </ul>
-
-                    <h4>🔧 ¿Cómo Funciona?</h4>
-                    <p>Imagina un libro de contabilidad digital que está copiado en miles de computadoras alrededor del mundo. Cada vez que ocurre una transacción:</p>
-                    <ol>
-                        <li>Se verifica por múltiples nodos</li>
-                        <li>Se agrupa en un "bloque" con otras transacciones</li>
-                        <li>Se añade a la "cadena" de bloques anteriores</li>
-                        <li>Se distribuye a todos los participantes</li>
-                    </ol>
-
-                    <h4>🌍 Aplicaciones Más Allá de las Criptomonedas</h4>
-                    <div class="applications-grid">
-                        <div class="app-card">
-                            <strong>🏦 Finanzas</strong>
-                            <p>Transferencias internacionales rápidas y económicas</p>
-                        </div>
-                        <div class="app-card">
-                            <strong>📦 Supply Chain</strong>
-                            <p>Seguimiento transparente de productos</p>
-                        </div>
-                        <div class="app-card">
-                            <strong>🏥 Salud</strong>
-                            <p>Historiales médicos seguros e interoperables</p>
-                        </div>
-                        <div class="app-card">
-                            <strong>🗳️ Votación</strong>
-                            <p>Sistemas electorales transparentes y auditables</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="guide-modal-actions">
-                    <button class="btn btn-primary guide-modal-close">
-                        ¡Entendido! 👍
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="primeros-pasos-guide-modal" class="modal guide-modal">
-        <div class="modal-content guide-modal-content">
-            <span class="close">&times;</span>
+            <div id="registerError" class="error-message hidden"></div>
             
-            <div class="guide-modal-header">
-                <div class="guide-modal-icon">🚀</div>
-                <div class="guide-modal-info">
-                    <span class="guide-modal-category inicio">
-                        Para Principiantes
-                    </span>
-                    <h2>Primeros Pasos en Cripto</h2>
-                    <p class="guide-modal-description">Guía completa para empezar tu viaje en el mundo de las criptomonedas de forma segura.</p>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="registerName">Nombre Completo</label>
+                    <input type="text" id="registerName" placeholder="Tu nombre completo" required>
                 </div>
-            </div>
-
-            <div class="guide-modal-body">
-                <div class="guide-modal-content-text">
-                    <h3>🎯 Comienza tu Viaje Cripto</h3>
-                    <p>Entrar al mundo de las criptomonedas puede parecer abrumador, pero con esta guía paso a paso estarás listo para empezar de forma segura y confiada.</p>
-
-                    <h4>📝 Paso 1: Educación e Investigación</h4>
-                    <div class="step">
-                        <strong>Antes de invertir, entiende:</strong>
-                        <ul>
-                            <li>¿Qué son las criptomonedas?</li>
-                            <li>¿Cómo funciona la tecnología blockchain?</li>
-                            <li>¿Cuáles son los riesgos y beneficios?</li>
-                            <li>¿Qué proyectos tienen potencial real?</li>
-                        </ul>
-                        <p><em>Regla de oro: Nunca inviertas más de lo que estés dispuesto a perder.</em></p>
-                    </div>
-
-                    <h4>💼 Paso 2: Elegir un Exchange</h4>
-                    <div class="exchanges-comparison">
-                        <div class="exchange">
-                            <strong>Coinbase</strong>
-                            <p>✅ Ideal para principiantes<br>✅ Interfaz intuitiva<br>✅ Seguro y regulado<br>⛔ Fees más altos</p>
-                        </div>
-                        <div class="exchange">
-                            <strong>Binance</strong>
-                            <p>✅ Amplia variedad de criptos<br>✅ Fees competitivos<br>✅ Funciones avanzadas<br>⛔ Menos regulado</p>
-                        </div>
-                        <div class="exchange">
-                            <strong>Kraken</strong>
-                            <p>✅ Excelente seguridad<br>✅ Buen soporte<br>✅ Transparente<br>⛔ Interfaz compleja</p>
-                        </div>
-                    </div>
-
-                    <h4>💰 Paso 4: Tu Primera Compra</h4>
-                    <div class="buying-guide">
-                        <div class="strategy">
-                            <strong>💡 Estrategia DCA (Dollar Cost Averaging)</strong>
-                            <p>Compra pequeñas cantidades regularmente en lugar de todo de una vez. Esto reduce el riesgo de timing del mercado.</p>
-                        </div>
-                        <div class="recommendation">
-                            <strong>🎯 Criptos para Empezar</strong>
-                            <ul>
-                                <li><strong>Bitcoin (BTC):</strong> Reserva de valor digital</li>
-                                <li><strong>Ethereum (ETH):</strong> Plataforma de contratos inteligentes</li>
-                                <li><strong>Estables (USDT/USDC):</strong> Para aprender trading</li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="registerEmail">Correo Electrónico</label>
+                    <input type="email" id="registerEmail" placeholder="tu@email.com" required>
                 </div>
-                
-                <div class="guide-modal-actions">
-                    <button class="btn btn-primary guide-modal-close">
-                        ¡Listo para empezar! 🚀
-                    </button>
+                <div class="form-group">
+                    <label for="registerPassword">Contraseña</label>
+                    <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="seguridad-guide-modal" class="modal guide-modal">
-        <div class="modal-content guide-modal-content">
-            <span class="close">&times;</span>
-            
-            <div class="guide-modal-header">
-                <div class="guide-modal-icon">🔒</div>
-                <div class="guide-modal-info">
-                    <span class="guide-modal-category seguridad">
-                        Seguridad
-                    </span>
-                    <h2>Seguridad y Wallets</h2>
-                    <p class="guide-modal-description">Aprende las mejores prácticas para proteger tus activos digitales de posibles amenazas.</p>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirmar Contraseña</label>
+                    <input type="password" id="registerConfirmPassword" placeholder="Repite tu contraseña" required>
                 </div>
-            </div>
-
-            <div class="guide-modal-body">
-                <div class="guide-modal-content-text">
-                    <h3>🛡️ Protege Tus Activos Digitales</h3>
-                    <p>En el mundo cripto, tú eres tu propio banco. Esta libertad viene con la responsabilidad de proteger tus activos. Sigue estas prácticas esenciales.</p>
-
-                    <h4>🎯 Tipos de Wallets y Cuándo Usarlas</h4>
-                    <div class="wallets-comparison">
-                        <div class="wallet-type">
-                            <strong>📱 Hot Wallets (Conexión a Internet)</strong>
-                            <div class="pros-cons">
-                                <div class="pros">
-                                    <strong>Ventajas:</strong>
-                                    <ul>
-                                        <li>Fácil acceso y uso</li>
-                                        <li>Transacciones rápidas</li>
-                                        <li>Ideales para trading</li>
-                                    </ul>
-                                </div>
-                                <div class="cons">
-                                    <strong>Desventajas:</strong>
-                                    <ul>
-                                        <li>Vulnerable a hackeos</li>
-                                        <li>Depende de terceros</li>
-                                        <li>Menos seguras</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <p><strong>💡 Recomendación:</strong> Usa solo para cantidades pequeñas que usarías como "efectivo digital".</p>
-                        </div>
-
-                        <div class="wallet-type">
-                            <strong>💽 Cold Wallets (Sin Conexión a Internet)</strong>
-                            <div class="pros-cons">
-                                <div class="pros">
-                                    <strong>Ventajas:</strong>
-                                    <ul>
-                                        <li>Máxima seguridad</li>
-                                        <li>Control total de claves</li>
-                                        <li>Inmunes a hackeos online</li>
-                                    </ul>
-                                </div>
-                                <div class="cons">
-                                    <strong>Desventajas:</strong>
-                                    <ul>
-                                        <li>Menos convenientes</li>
-                                        <li>Costo inicial</li>
-                                        <li>Responsabilidad total</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <p><strong>💡 Recomendación:</strong> Usa para ahorros a largo plazo y cantidades significativas.</p>
-                        </div>
-                    </div>
-
-                    <h4>🔐 Mejores Prácticas de Seguridad</h4>
-                    <div class="security-checklist">
-                        <div class="checklist-item">
-                            <span class="check">✅</span>
-                            <div>
-                                <strong>Autenticación 2FA en Todo</strong>
-                                <p>Activa 2FA en exchanges, email y cualquier servicio relacionado. Usa apps como Google Authenticator, no SMS.</p>
-                            </div>
-                        </div>
-                        <div class="checklist-item">
-                            <span class="check">✅</span>
-                            <div>
-                                <strong>Backup de Seed Phrases</strong>
-                                <p>Guarda tu frase semilla en lugares seguros físicos. Nunca la almacenes digitalmente.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="guide-modal-actions">
-                    <button class="btn btn-primary guide-modal-close">
-                        ¡Seguridad activada! 🔒
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="trading-basico-guide-modal" class="modal guide-modal">
-        <div class="modal-content guide-modal-content">
-            <span class="close">&times;</span>
-            
-            <div class="guide-modal-header">
-                <div class="guide-modal-icon">📈</div>
-                <div class="guide-modal-info">
-                    <span class="guide-modal-category trading">
-                        Trading
-                    </span>
-                    <h2>Trading Básico</h2>
-                    <p class="guide-modal-description">Conceptos fundamentales del trading: análisis técnico, fundamental y estrategias.</p>
-                </div>
-            </div>
-
-            <div class="guide-modal-body">
-                <div class="guide-modal-content-text">
-                    <h3>📊 Fundamentos del Trading Cripto</h3>
-                    <p>El trading de criptomonedas puede ser emocionante y rentable, pero requiere conocimiento y disciplina. Comienza con estos conceptos básicos.</p>
-
-                    <h4>🎯 Tipos de Análisis</h4>
-                    <div class="analysis-types">
-                        <div class="analysis">
-                            <strong>📈 Análisis Técnico</strong>
-                            <p>Estudio de gráficos y patrones de precios históricos para predecir movimientos futuros.</p>
-                            <ul>
-                                <li>Soportes y resistencias</li>
-                                <li>Indicadores técnicos (RSI, MACD)</li>
-                                <li>Patrones de velas</li>
-                                <li>Tendencias y canales</li>
-                            </ul>
-                        </div>
-                        <div class="analysis">
-                            <strong>📰 Análisis Fundamental</strong>
-                            <p>Evaluación del valor intrínseco de un proyecto basado en su tecnología, equipo y adopción.</p>
-                            <ul>
-                                <li>Tokenomics y utilidad</li>
-                                <li>Equipo y desarrollo</li>
-                                <li>Adopción y comunidad</li>
-                                <li>Noticias y eventos</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <h4>💡 Estrategias para Principiantes</h4>
-                    <div class="strategies">
-                        <div class="strategy">
-                            <strong>💎 HODL (Buy and Hold)</strong>
-                            <p>Comprar y mantener a largo plazo, independientemente de la volatilidad.</p>
-                            <p><em>Ventaja: Menos estrés, exposición a crecimiento a largo plazo</em></p>
-                        </div>
-                        <div class="strategy">
-                            <strong>⚡ DCA (Dollar Cost Averaging)</strong>
-                            <p>Invertir cantidades fijas regularmente para promediar el precio de compra.</p>
-                            <p><em>Ventaja: Reduce el riesgo de timing del mercado</em></p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="guide-modal-actions">
-                    <button class="btn btn-primary guide-modal-close">
-                        ¡A tradear! 📈
-                    </button>
-                </div>
-            </div>
+                <button type="submit" id="registerSubmit" class="btn btn-primary btn-full">
+                    Crear Cuenta
+                </button>
+            </form>
+            <p class="auth-switch">
+                ¿Ya tienes cuenta? <a href="#" id="switchToLogin">Inicia sesión aquí</a>
+            </p>
         </div>
     </div>
 
     <!-- JavaScript -->
+    <script src="/Fronted/Funtion/api-system.js"></script>
     <script src="/Fronted/Funtion/main.js"></script>
-   <script src="/Fronted/Funtion/api-system.js"></script>
-<script src="/Fronted/Funtion/header-manager.js"></script>
-    
-  
-   
-   
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="/Fronted/Funtion/dashboard-export.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <button onclick="resetPortfolio()" class="btn btn-danger">Reiniciar Portafolio</button>
+
+
 </body>
 </html>

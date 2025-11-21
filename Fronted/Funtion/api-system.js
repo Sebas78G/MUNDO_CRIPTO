@@ -1,243 +1,213 @@
-// api-system.js - Sistema de comunicación con la API del backend
-class ApiSystem {
+// api-system.js - Sistema de comunicación con el backend
+
+class APISystem {
     constructor() {
-        this.API_BASE = 'http://localhost:3000/api';
+        this.baseURL = 'http://localhost:3000/api';
         this.token = localStorage.getItem('authToken');
-        this.currentUser = JSON.parse(localStorage.getItem('userData') || 'null');
+        console.log('🔧 APISystem inicializado');
     }
 
-    // Método principal para llamadas a la API
-    async call(endpoint, method = 'GET', data = null) { 
-        const url = `${this.API_BASE}${endpoint}`;
-        const options = {
-            method: method,
+    // Helper para hacer requests
+    async request(endpoint, options = {}) {
+        const url = `${this.baseURL}${endpoint}`;
+        
+        const config = {
+            method: options.method || 'GET',
             headers: {
                 'Content-Type': 'application/json',
+                ...options.headers
             }
         };
 
         // Agregar token si existe
         if (this.token) {
-            options.headers['Authorization'] = `Bearer ${this.token}`;
+            config.headers['Authorization'] = `Bearer ${this.token}`;
         }
 
-        // Agregar datos para POST/PUT
-        if (data && (method === 'POST' || method === 'PUT')) {
-            options.body = JSON.stringify(data);
+        // Agregar body si existe
+        if (options.body) {
+            config.body = JSON.stringify(options.body);
         }
 
         try {
-            console.log(`🌐 API Call: ${method} ${url}`, data);
-            const response = await fetch(url, options);
-            const result = await response.json();
+            console.log(`📡 ${config.method} ${url}`);
+            const response = await fetch(url, config);
+            const data = await response.json();
             
-            if (!response.ok) {
-                throw new Error(result.message || `Error ${response.status}`);
-            }
-            
-            console.log(`✅ API Response:`, result);
-            return result;
+            console.log(`📥 Respuesta:`, data);
+            return data;
         } catch (error) {
-            console.error(`❌ API Error (${endpoint}):`, error);
-            throw error;
+            console.error(`❌ Error en request:`, error);
+            return { 
+                success: false, 
+                message: 'Error de conexión con el servidor' 
+            };
         }
     }
 
-    // En api-system.js
-async getUserByEmail(email) {
-    try {
-        const token = this.getToken();
-        const response = await fetch(`${this.baseUrl}/user/profile`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ email: email })
-        });
-        
-        return await response.json();
-    } catch (error) {
-        return { success: false, message: error.message };
-    }
-}
-
-     async savePortfolioData(data) {
-    try {
-        const result = await this.call('/portfolio/save', 'POST', data);
-        return result;
-    } catch (error) {
-        return { 
-            success: false, 
-            message: error.message 
-        };
-    }
-}
-
-    // Obtener historial del portafolio
-  async getPortfolioHistory(params = {}) {
-    try {
-        const queryString = new URLSearchParams(params).toString();
-        const result = await this.call(`/portfolio/history?${queryString}`, 'GET');
-        return result;
-    } catch (error) {
-        return { 
-            success: false, 
-            message: error.message 
-        };
-    }
-}
-
-async getPortfolioInvestments() {
-    try {
-        const result = await this.call('/portfolio/investments', 'GET');
-        return result;
-    } catch (error) {
-        return { 
-            success: false, 
-            message: error.message 
-        };
-    }
-}
-
-    // ========== AUTH METHODS ==========
+    // Registro de usuario
     async register(userData) {
         try {
-            const result = await this.call('/register', 'POST', userData);
+            console.log('👤 Registrando usuario:', userData.email);
+            
+            const result = await this.request('/register', {
+                method: 'POST',
+                body: userData
+            });
+
+            if (result.success && result.token) {
+                this.token = result.token;
+                localStorage.setItem('authToken', result.token);
+                localStorage.setItem('userData', JSON.stringify(result.user));
+            }
+
             return result;
         } catch (error) {
+            console.error('❌ Error en register:', error);
             return { 
                 success: false, 
-                message: error.message || 'Error en el registro' 
+                message: 'Error al registrar usuario' 
             };
         }
     }
 
+    // Login de usuario
     async login(credentials) {
         try {
-            const result = await this.call('/login', 'POST', credentials);
+            console.log('🔐 Iniciando sesión:', credentials.email);
             
-            if (result.success) {
-                this.setSession(result.user, result.token);
+            const result = await this.request('/login', {
+                method: 'POST',
+                body: credentials
+            });
+
+            if (result.success && result.token) {
+                this.token = result.token;
+                localStorage.setItem('authToken', result.token);
+                localStorage.setItem('userData', JSON.stringify(result.user));
             }
-            
+
             return result;
         } catch (error) {
+            console.error('❌ Error en login:', error);
             return { 
                 success: false, 
-                message: error.message || 'Error en el login' 
+                message: 'Error al iniciar sesión' 
             };
         }
     }
 
+    // Obtener perfil del usuario
     async getProfile() {
-    try {
-        // Agregar timeout para evitar que se quede colgado
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 segundos timeout
-        
-        const response = await fetch(`${this.API_BASE}/profile`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.token}`
-            },
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (!response.ok) {
-            throw new Error(`Error ${response.status}: ${response.statusText}`);
-        }
-        
-        const result = await response.json();
-        console.log('✅ getProfile response:', result);
-        return result;
-        
-    } catch (error) {
-        console.error('❌ Error en getProfile:', error);
-        
-        // Si es timeout, devolver un resultado por defecto
-        if (error.name === 'AbortError') {
-            console.warn('⚠️ Timeout en getProfile, usando datos de localStorage');
-            return {
-                success: true,
-                user: this.currentUser // Usar el usuario que ya tenemos en memoria
-            };
-        }
-        
-        return { 
-            success: false, 
-            message: error.message || 'Error obteniendo perfil' 
-        };
-    }
-}
-
-    async checkHealth() {
         try {
-            const result = await this.call('/health', 'GET');
-            return result;
+            console.log('📋 Obteniendo perfil...');
+            
+            if (!this.token) {
+                return { 
+                    success: false, 
+                    message: 'No hay sesión activa' 
+                };
+            }
+
+            return await this.request('/profile');
         } catch (error) {
+            console.error('❌ Error en getProfile:', error);
             return { 
                 success: false, 
-                message: 'Servidor no disponible' 
+                message: 'Error al obtener perfil' 
             };
         }
-    }
-
-    // ========== SESSION MANAGEMENT ==========
-    setSession(user, token) {
-        this.currentUser = user;
-        this.token = token;
-        
-        localStorage.setItem('authToken', token);
-        localStorage.setItem('userData', JSON.stringify(user));
-        
-        console.log('🔐 Sesión guardada:', user.name);
-    }
-
-    clearSession() {
-        this.currentUser = null;
-        this.token = null;
-        
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('userData');
-        
-        console.log('🔓 Sesión limpiada');
-    }
-
-    getCurrentUser() {
-        return this.currentUser;
     }
 
     isAuthenticated() {
-        return !!this.token && !!this.currentUser;
+    const token = localStorage.getItem('authToken');
+    const user = localStorage.getItem('currentUser');
+    return !!(token && user);
+    }
+    // Obtener usuario actual
+    getCurrentUser() {
+        const userData = localStorage.getItem('userData');
+        return userData ? JSON.parse(userData) : null;
     }
 
-    // ========== VALIDATION METHODS ==========
+    // Limpiar sesión
+    clearSession() {
+        this.token = null;
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('userData');
+        console.log('🚪 Sesión limpiada');
+    }
+
+    // Validaciones
     validateEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
     }
 
     validatePassword(password) {
-        return password.length >= 6;
+        return password && password.length >= 6;
     }
 
     validateName(name) {
-        return name.trim().length >= 2;
+        return name && name.length >= 2;
+    }
+
+    // Guardar transacción de portfolio
+    async savePortfolioTransaction(data) {
+        try {
+            return await this.request('/portfolio/save', {
+                method: 'POST',
+                body: data
+            });
+        } catch (error) {
+            console.error('❌ Error guardando transacción:', error);
+            return { 
+                success: false, 
+                message: 'Error al guardar transacción' 
+            };
+        }
+    }
+
+    // Obtener historial de portfolio
+    async getPortfolioHistory() {
+        try {
+            return await this.request('/portfolio/history');
+        } catch (error) {
+            console.error('❌ Error obteniendo historial:', error);
+            return { 
+                success: false, 
+                message: 'Error al obtener historial' 
+            };
+        }
+    }
+
+    // Obtener inversiones
+    async getPortfolioInvestments() {
+        try {
+            return await this.request('/portfolio/investments');
+        } catch (error) {
+            console.error('❌ Error obteniendo inversiones:', error);
+            return { 
+                success: false, 
+                message: 'Error al obtener inversiones' 
+            };
+        }
+    }
+
+    // Health check
+    async healthCheck() {
+        try {
+            return await this.request('/health');
+        } catch (error) {
+            console.error('❌ Error en health check:', error);
+            return { 
+                success: false, 
+                message: 'Servidor no disponible' 
+            };
+        }
     }
 }
 
-// Auto-inicialización
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('🌐 Inicializando ApiSystem...');
-        window.apiSystem = new ApiSystem();
-    });
-} else {
-    console.log('🌐 Inicializando ApiSystem (DOM listo)...');
-    window.apiSystem = new ApiSystem();
-}
-
+// Hacer disponible globalmente
+window.APISystem = APISystem;
+console.log('✅ APISystem class definida');

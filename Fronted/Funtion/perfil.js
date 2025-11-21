@@ -1,47 +1,142 @@
-// perfil.js - Gestión de la página de perfil
+// perfil.js - VERSIÓN COMPLETAMENTE FUNCIONAL
+
 class ProfileManager {
     constructor() {
         this.api = window.apiSystem;
-        this.init();
+        this.currentUser = null;
     }
 
-    init() {
+    async init() {
         console.log('👤 Inicializando ProfileManager...');
-        this.checkAuthentication();
-        this.setupEventListeners();
-        this.loadUserData();
-    }
-
-    checkAuthentication() {
-        if (!this.api || !this.api.isAuthenticated()) {
+        
+        // Esperar a que API esté disponible
+        await this.waitForAPI();
+        
+        // Cargar usuario
+        await this.loadUser();
+        
+        // Verificar autenticación
+        if (!this.currentUser) {
             console.log('❌ Usuario no autenticado, redirigiendo...');
             this.redirectToIndex();
             return;
         }
-        console.log('✅ Usuario autenticado');
+        
+        // Configurar página
+        this.setupEventListeners();
+        this.displayUserData();
+        
+        console.log('✅ ProfileManager inicializado correctamente');
+    }
+
+    async waitForAPI() {
+        let attempts = 0;
+        while (!window.apiSystem && attempts < 30) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        if (window.apiSystem) {
+            this.api = window.apiSystem;
+            console.log('✅ API conectada');
+        } else {
+            console.warn('⚠️ API no disponible');
+        }
+    }
+
+    async loadUser() {
+        console.log('📥 Cargando usuario...');
+        
+        // Intentar 3 fuentes
+        this.currentUser = 
+            this.getUserFromLocalStorage() ||
+            this.getUserFromSessionStorage() ||
+            await this.getUserFromAPI();
+        
+        if (this.currentUser) {
+            console.log('✅ Usuario cargado:', this.currentUser);
+        } else {
+            console.log('❌ No se pudo cargar usuario');
+        }
+    }
+
+    getUserFromLocalStorage() {
+        try {
+            const userData = localStorage.getItem('currentUser');
+            if (userData) {
+                return JSON.parse(userData);
+            }
+        } catch (error) {
+            console.error('Error leyendo localStorage:', error);
+        }
+        return null;
+    }
+
+    getUserFromSessionStorage() {
+        try {
+            const userData = sessionStorage.getItem('currentUser');
+            if (userData) {
+                return JSON.parse(userData);
+            }
+        } catch (error) {
+            console.error('Error leyendo sessionStorage:', error);
+        }
+        return null;
+    }
+
+    async getUserFromAPI() {
+        if (!this.api) return null;
+        
+        try {
+            const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+            if (!token) return null;
+
+            if (typeof this.api.getProfile === 'function') {
+                const response = await this.api.getProfile();
+                if (response && response.success && response.user) {
+                    return response.user;
+                }
+            }
+        } catch (error) {
+            console.error('Error obteniendo usuario de API:', error);
+        }
+        
+        return null;
     }
 
     setupEventListeners() {
-        // Botón de cerrar sesión
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            this.showLogoutModal();
-        });
+        // Botón de logout
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                this.showLogoutModal();
+            });
+        }
 
-        // Modal de confirmación de logout
-        document.getElementById('confirmLogout').addEventListener('click', () => {
-            this.handleLogout();
-        });
+        // Modal de logout
+        const confirmLogout = document.getElementById('confirmLogout');
+        const cancelLogout = document.getElementById('cancelLogout');
+        const logoutModal = document.getElementById('logoutModal');
 
-        document.getElementById('cancelLogout').addEventListener('click', () => {
-            this.hideLogoutModal();
-        });
+        if (confirmLogout) {
+            confirmLogout.addEventListener('click', () => {
+                this.handleLogout();
+            });
+        }
 
-        // Cerrar modal al hacer click fuera
-        document.getElementById('logoutModal').addEventListener('click', (e) => {
-            if (e.target.id === 'logoutModal') {
+        if (cancelLogout) {
+            cancelLogout.addEventListener('click', () => {
                 this.hideLogoutModal();
-            }
-        });
+            });
+        }
+
+        if (logoutModal) {
+            logoutModal.addEventListener('click', (e) => {
+                if (e.target === logoutModal) {
+                    this.hideLogoutModal();
+                }
+            });
+        }
 
         // Cerrar modal con Escape
         document.addEventListener('keydown', (e) => {
@@ -49,84 +144,133 @@ class ProfileManager {
                 this.hideLogoutModal();
             }
         });
+
+        // Botones de configuración (placeholder)
+        const settingBtns = document.querySelectorAll('.setting-btn');
+        settingBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.showMessage('🚧 Función en desarrollo', 'info');
+            });
+        });
+
+        console.log('✅ Event listeners configurados');
     }
 
-    async loadUserData() {
-        try {
-            console.log('📥 Cargando datos del usuario...');
-            const response = await this.api.getProfile();
-            
-            if (response.success && response.user) {
-                this.displayUserData(response.user);
-            } else {
-                console.error('❌ Error al cargar datos del usuario:', response.message);
-                this.showMessage('Error al cargar datos del perfil', 'error');
-            }
-        } catch (error) {
-            console.error('❌ Error en loadUserData:', error);
-            this.showMessage('Error de conexión al cargar perfil', 'error');
+    displayUserData() {
+        if (!this.currentUser) {
+            console.error('❌ No hay usuario para mostrar');
+            return;
         }
-    }
 
-    displayUserData(user) {
-        console.log('👤 Mostrando datos del usuario:', user);
+        console.log('👤 Mostrando datos del usuario...');
         
+        const displayName = this.currentUser.name || this.currentUser.email || 'Usuario';
+        const email = this.currentUser.email || 'email@ejemplo.com';
+        const initial = displayName.charAt(0).toUpperCase();
+
         // Mostrar nombre en el header
         const userNameElements = document.querySelectorAll('#userName');
         userNameElements.forEach(element => {
-            element.textContent = user.name || 'Usuario';
+            element.textContent = displayName;
         });
 
         // Mostrar inicial del avatar
         const userInitial = document.getElementById('userInitial');
-        if (userInitial && user.name) {
-            userInitial.textContent = user.name.charAt(0).toUpperCase();
+        if (userInitial) {
+            userInitial.textContent = initial;
         }
 
         // Mostrar mensaje de bienvenida
         const welcomeMessage = document.getElementById('welcomeMessage');
-        if (welcomeMessage && user.name) {
-            welcomeMessage.textContent = `Bienvenido, ${user.name}`;
+        if (welcomeMessage) {
+            welcomeMessage.textContent = `Bienvenido, ${displayName}`;
         }
 
         // Mostrar email
         const userEmail = document.getElementById('userEmail');
-        if (userEmail && user.email) {
-            userEmail.textContent = user.email;
+        if (userEmail) {
+            userEmail.textContent = email;
         }
 
-        // Mostrar fecha de registro (si está disponible)
+        // Mostrar fecha de registro
         const memberSince = document.getElementById('memberSince');
         if (memberSince) {
-            memberSince.textContent = user.createdAt ? 
-                new Date(user.createdAt).toLocaleDateString('es-ES') : 'Hoy';
+            if (this.currentUser.createdAt) {
+                const date = new Date(this.currentUser.createdAt);
+                memberSince.textContent = date.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } else {
+                memberSince.textContent = new Date().toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
         }
 
-        // Aplicar color al avatar basado en el nombre
-        this.applyAvatarColor(user);
+        // Aplicar color al avatar
+        this.applyAvatarColor();
+
+        // Cargar estadísticas del portafolio
+        this.loadPortfolioStats();
+
+        console.log('✅ Datos del usuario mostrados');
     }
 
-    applyAvatarColor(user) {
+    applyAvatarColor() {
         const avatar = document.querySelector('.avatar');
-        if (!avatar || !user.name) return;
+        if (!avatar || !this.currentUser) return;
 
         const colors = [
-            'linear-gradient(135deg, #007bff, #0056b3)',
-            'linear-gradient(135deg, #28a745, #1e7e34)',
-            'linear-gradient(135deg, #dc3545, #c82333)',
-            'linear-gradient(135deg, #ffc107, #e0a800)',
-            'linear-gradient(135deg, #6f42c1, #5a2d91)'
+            'linear-gradient(135deg, #667eea, #764ba2)',
+            'linear-gradient(135deg, #f093fb, #f5576c)',
+            'linear-gradient(135deg, #4facfe, #00f2fe)',
+            'linear-gradient(135deg, #43e97b, #38f9d7)',
+            'linear-gradient(135deg, #fa709a, #fee140)'
         ];
 
-        // Generar índice de color basado en el nombre
-        const name = user.name;
+        const name = this.currentUser.name || this.currentUser.email || 'User';
         const hash = name.split('').reduce((a, b) => {
             a = ((a << 5) - a) + b.charCodeAt(0);
             return a & a;
         }, 0);
-        const colorIndex = Math.abs(hash) % colors.length;
         
+        const colorIndex = Math.abs(hash) % colors.length;
         avatar.style.background = colors[colorIndex];
+    }
+
+    loadPortfolioStats() {
+        try {
+            // Cargar estadísticas del portafolio desde localStorage
+            const portfolioState = localStorage.getItem('crypto_portfolio_state');
+            
+            if (portfolioState) {
+                const portfolio = JSON.parse(portfolioState);
+                
+                // Actualizar estadísticas en las tarjetas
+                const statValues = document.querySelectorAll('.stat-value');
+                
+                if (statValues.length >= 2) {
+                    // Valor del portafolio
+                    const totalValue = (portfolio.availableBalance || 0) + 
+                                      (portfolio.investments || []).reduce((sum, inv) => 
+                                          sum + (inv.currentValue || 0), 0);
+                    statValues[0].textContent = `$${totalValue.toFixed(2)}`;
+                    
+                    // Número de inversiones
+                    statValues[1].textContent = (portfolio.investments || []).length;
+                }
+                
+                console.log('✅ Estadísticas del portafolio cargadas');
+            } else {
+                console.log('ℹ️ No hay estadísticas de portafolio disponibles');
+            }
+        } catch (error) {
+            console.error('❌ Error cargando estadísticas:', error);
+        }
     }
 
     showLogoutModal() {
@@ -149,12 +293,19 @@ class ProfileManager {
         console.log('🚪 Cerrando sesión...');
         
         // Limpiar sesión
-        this.api.clearSession();
+        this.clearSession();
+        
+        if (this.api && typeof this.api.clearSession === 'function') {
+            this.api.clearSession();
+        }
+        
+        // Disparar evento
+        window.dispatchEvent(new CustomEvent('userLoggedOut'));
         
         // Mostrar mensaje
         this.showMessage('👋 Sesión cerrada correctamente', 'success');
         
-        // Redirigir después de un breve delay
+        // Redirigir
         setTimeout(() => {
             this.redirectToIndex();
         }, 1000);
@@ -162,25 +313,37 @@ class ProfileManager {
         this.hideLogoutModal();
     }
 
+    clearSession() {
+        try {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('authToken');
+            sessionStorage.removeItem('currentUser');
+            sessionStorage.removeItem('authToken');
+            console.log('🧹 Sesión limpiada');
+        } catch (error) {
+            console.error('❌ Error limpiando sesión:', error);
+        }
+    }
+
     redirectToIndex() {
         console.log('🔄 Redirigiendo al index...');
-        window.location.href = '/Fronted/index.html'; // Ajusta la ruta según tu estructura
+        window.location.href = '/Fronted/index.html';
     }
 
     showMessage(message, type = 'info') {
-        // Remover mensajes existentes
         const existingMessages = document.querySelectorAll('.profile-message');
         existingMessages.forEach(msg => msg.remove());
 
         const messageEl = document.createElement('div');
         messageEl.className = `profile-message profile-${type}`;
-        messageEl.innerHTML = `
-            <div class="profile-message-content">
-                <span>${message}</span>
-            </div>
-        `;
         
-        // Estilos inline para el mensaje
+        const colors = {
+            success: 'linear-gradient(135deg, #10b981, #059669)',
+            error: 'linear-gradient(135deg, #ef4444, #dc2626)',
+            warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
+            info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
+        };
+        
         messageEl.style.cssText = `
             position: fixed;
             top: 20px;
@@ -191,40 +354,27 @@ class ProfileManager {
             transition: all 0.3s ease;
         `;
 
-        const messageContent = messageEl.querySelector('.profile-message-content');
+        const messageContent = document.createElement('div');
         messageContent.style.cssText = `
-            padding: 12px 20px;
+            padding: 1rem 1.5rem;
             border-radius: 8px;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: ${colors[type] || colors.info};
+            color: white;
             min-width: 250px;
             text-align: center;
         `;
-
-        // Colores según el tipo
-        if (type === 'success') {
-            messageContent.style.background = '#d4edda';
-            messageContent.style.color = '#155724';
-            messageContent.style.border = '1px solid #c3e6cb';
-        } else if (type === 'error') {
-            messageContent.style.background = '#f8d7da';
-            messageContent.style.color = '#721c24';
-            messageContent.style.border = '1px solid #f5c6cb';
-        } else {
-            messageContent.style.background = '#d1ecf1';
-            messageContent.style.color = '#0c5460';
-            messageContent.style.border = '1px solid #bee5eb';
-        }
-
+        messageContent.textContent = message;
+        
+        messageEl.appendChild(messageContent);
         document.body.appendChild(messageEl);
 
-        // Animación de entrada
         setTimeout(() => {
             messageEl.style.opacity = '1';
             messageEl.style.transform = 'translateY(0)';
         }, 10);
 
-        // Auto-remover después de 4 segundos
         setTimeout(() => {
             messageEl.style.opacity = '0';
             messageEl.style.transform = 'translateY(-20px)';
@@ -233,19 +383,17 @@ class ProfileManager {
     }
 }
 
-// Inicialización cuando el DOM esté listo
+// Inicialización automática
 document.addEventListener('DOMContentLoaded', function() {
     console.log('👤 Inicializando página de perfil...');
     
-    const initProfileManager = () => {
-        if (window.apiSystem) {
-            window.profileManager = new ProfileManager();
-            console.log('✅ ProfileManager inicializado correctamente');
-        } else {
-            console.log('⏳ Esperando apiSystem...');
-            setTimeout(initProfileManager, 100);
-        }
-    };
+    // Crear instancia del ProfileManager
+    window.profileManager = new ProfileManager();
     
-    initProfileManager();
+    // Inicializar después de un pequeño delay
+    setTimeout(() => {
+        window.profileManager.init();
+    }, 100);
 });
+
+console.log('✅ perfil.js cargado');

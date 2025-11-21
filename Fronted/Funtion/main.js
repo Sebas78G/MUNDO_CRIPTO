@@ -1,9 +1,12 @@
 // main.js - Sistema principal que carga y coordina todos los módulos
 
 console.log('🚀 Iniciando Mundo Cripto...');
+
 class MainApp {
     constructor() {
         this.modules = {};
+        this.api = null;
+        this.currentUser = null;
         this.init();
     }
 
@@ -13,6 +16,9 @@ class MainApp {
         try {
             // Cargar módulos externos
             await this.loadExternalModules();
+            
+            // CRÍTICO: Inicializar API primero
+            await this.setupAPISystem();
             
             // Inicializar sistemas principales
             this.setupAuthSystem();
@@ -32,13 +38,12 @@ class MainApp {
 
     async loadExternalModules() {
         const moduleFiles = [
+            '/Fronted/Funtion/api-system.js',  // ← API PRIMERO
             '/Fronted/Funtion/guide-buttons.js',
             '/Fronted/Funtion/news-system.js',
             '/Fronted/Funtion/market-system.js',
             '/Fronted/Funtion/education-system.js',
-            '/Fronted/Funtion/api-system.js',
             '/Fronted/Funtion/auth-system.js'
-
         ];
 
         console.log('📦 Cargando módulos externos...');
@@ -53,6 +58,57 @@ class MainApp {
         }
     }
 
+    // NUEVO: Inicializar API System
+    async setupAPISystem() {
+        console.log('🔧 Inicializando API System...');
+        
+        // Esperar a que APISystem esté disponible
+        let attempts = 0;
+        while (!window.APISystem && attempts < 50) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            attempts++;
+        }
+        
+        if (window.APISystem) {
+            this.api = new window.APISystem();
+            window.apiSystem = this.api;
+            console.log('✅ API System inicializado');
+        } else {
+            console.error('❌ No se pudo inicializar API System');
+        }
+    }
+
+    // NUEVO: Configurar sistema de autenticación
+    setupAuthSystem() {
+        console.log('🔐 Configurando sistema de autenticación...');
+        
+        // Configurar event listeners para los botones
+        const loginBtn = document.getElementById('loginBtn');
+        const registerBtn = document.getElementById('registerBtn');
+        
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => this.openModal('loginModal'));
+        }
+        
+        if (registerBtn) {
+            registerBtn.addEventListener('click', () => this.openModal('registerModal'));
+        }
+        
+        // Configurar formularios
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', (e) => this.handleLogin(e));
+        }
+        
+        if (registerForm) {
+            registerForm.addEventListener('submit', (e) => this.handleRegister(e));
+        }
+        
+        console.log('✅ Sistema de autenticación configurado');
+    }
+
     async initModuleSystems() {
         console.log('🔄 Inicializando sistemas de módulos...');
         
@@ -61,11 +117,9 @@ class MainApp {
             this.modules.education = new window.EducationSystem();
             await this.modules.education.init();
             console.log('✅ Sistema educativo inicializado');
-        } else {
-            console.error('❌ EducationSystem no disponible');
         }
 
-        // Inicializar otros sistemas si existen
+        // Inicializar otros sistemas
         if (window.newsSystem) {
             console.log('✅ Sistema de noticias inicializado');
         }
@@ -79,34 +133,6 @@ class MainApp {
         }
     }
 
-    async getUserProfileByEmail(email) {
-    try {
-        console.log('📡 Buscando perfil del usuario con email:', email);
-        
-        // Si tienes una API para obtener el perfil por email
-        if (this.api && this.api.getUserByEmail) {
-            const response = await this.api.getUserByEmail(email);
-            if (response.success && response.user) {
-                console.log('✅ Perfil encontrado:', response.user);
-                return response.user;
-            }
-        }
-        
-        // Si no hay API específica, intenta con getProfile
-        const response = await this.api.getProfile();
-        if (response.success && response.user) {
-            console.log('✅ Perfil obtenido:', response.user);
-            return response.user;
-        }
-        
-        console.warn('⚠️ No se pudo obtener el perfil completo');
-        return null;
-    } catch (error) {
-        console.error('❌ Error obteniendo perfil:', error);
-        return null;
-    }
-}
-
     loadScript(src) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -117,55 +143,8 @@ class MainApp {
         });
     }
 
-    setupAuthSystem() {
-        console.log('🔐 Configurando sistema de autenticación...');
-        
-        // Botón de Iniciar Sesión
-        const loginBtn = document.getElementById('loginBtn');
-        if (loginBtn) {
-            loginBtn.addEventListener('click', () => {
-                console.log('👆 Click en Iniciar Sesión');
-                this.openModal('loginModal');
-            });
-        }
-
-        // Botón de Registrarse
-        const registerBtn = document.getElementById('registerBtn');
-        if (registerBtn) {
-            registerBtn.addEventListener('click', () => {
-                console.log('👆 Click en Registrarse');
-                this.openModal('registerModal');
-            });
-        }
-
-        // Formulario de Login
-        const loginForm = document.getElementById('loginForm');
-        if (loginForm) {
-            loginForm.addEventListener('submit', (e) => this.handleLogin(e));
-        }
-
-        // Formulario de Registro
-        const registerForm = document.getElementById('registerForm');
-        if (registerForm) {
-            registerForm.addEventListener('submit', (e) => this.handleRegister(e));
-        }
-
-        // Switch entre modales
-        document.getElementById('switchToRegister')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.closeModal('loginModal');
-            this.openModal('registerModal');
-        });
-
-        document.getElementById('switchToLogin')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.closeModal('registerModal');
-            this.openModal('loginModal');
-        });
-    }
-
     setupNavigation() {
-        console.log('📍 Configurando navegación...');
+        console.log('🧭 Configurando navegación...');
         
         // Scroll suave para enlaces internos
         document.addEventListener('click', (e) => {
@@ -269,182 +248,164 @@ class MainApp {
         }
     }
 
-    handleLogin(e) {
+    async handleLogin(e) {
         e.preventDefault();
         console.log('🚀 Procesando login...');
         
         const email = document.getElementById('loginEmail').value;
         const password = document.getElementById('loginPassword').value;
+        const submitBtn = document.getElementById('loginSubmit');
+        const errorDiv = document.getElementById('loginError');
 
+        // Validaciones
         if (!this.validateEmail(email)) {
-            this.showMessage('❌ Por favor, introduce un email válido', 'error');
+            this.showError(errorDiv, 'Email inválido');
             return;
         }
 
         if (password.length < 6) {
-            this.showMessage('❌ La contraseña debe tener al menos 6 caracteres', 'error');
+            this.showError(errorDiv, 'La contraseña debe tener al menos 6 caracteres');
             return;
         }
 
-        this.showMessage('⏳ Iniciando sesión...', 'info');
+        // Verificar que API está disponible
+        if (!this.api) {
+            this.showError(errorDiv, 'Sistema no inicializado. Por favor recarga la página.');
+            return;
+        }
 
-        setTimeout(() => {
-            const user = {
-                id: Date.now(),
-                name: email.split('@')[0],
-                email: email,
-                joinDate: new Date().toISOString()
-            };
-            
-            this.currentUser = user;
-            this.onLoginSuccess(user);
-        }, 1500);
+        try {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Iniciando sesión...';
+
+            const result = await this.api.login({ email, password });
+
+            if (result.success) {
+                console.log('✅ Login exitoso');
+                this.closeModal('loginModal');
+                this.onLoginSuccess(result.user);
+            } else {
+                this.showError(errorDiv, result.message || 'Error en el login');
+            }
+
+        } catch (error) {
+            console.error('❌ Error en login:', error);
+            this.showError(errorDiv, 'Error de conexión');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Iniciar Sesión';
+        }
     }
 
-    handleRegister(e) {
+    async handleRegister(e) {
         e.preventDefault();
-        console.log('🚀 Procesando registro...');
+        console.log('👤 Procesando registro...');
         
         const name = document.getElementById('registerName').value;
         const email = document.getElementById('registerEmail').value;
         const password = document.getElementById('registerPassword').value;
-        const confirmPassword = document.getElementById('registerConfirmPassword').value;
+        const submitBtn = document.getElementById('registerSubmit');
+        const errorDiv = document.getElementById('registerError');
 
-        if (name.trim().length < 2) {
-            this.showMessage('❌ El nombre debe tener al menos 2 caracteres', 'error');
+        // Validaciones
+        if (name.length < 2) {
+            this.showError(errorDiv, 'El nombre debe tener al menos 2 caracteres');
             return;
         }
 
         if (!this.validateEmail(email)) {
-            this.showMessage('❌ Por favor, introduce un email válido', 'error');
+            this.showError(errorDiv, 'Email inválido');
             return;
         }
 
         if (password.length < 6) {
-            this.showMessage('❌ La contraseña debe tener al menos 6 caracteres', 'error');
+            this.showError(errorDiv, 'La contraseña debe tener al menos 6 caracteres');
             return;
         }
 
-        if (password !== confirmPassword) {
-            this.showMessage('❌ Las contraseñas no coinciden', 'error');
+        // Verificar que API está disponible
+        if (!this.api) {
+            this.showError(errorDiv, 'Sistema no inicializado. Por favor recarga la página.');
             return;
         }
 
-        this.showMessage('⏳ Creando tu cuenta...', 'info');
+        try {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registrando...';
 
-        setTimeout(() => {
-            const user = {
-                id: Date.now(),
-                name: name,
-                email: email,
-                joinDate: new Date().toISOString()
-            };
-            
-            this.currentUser = user;
-            this.onRegisterSuccess(user);
-        }, 2000);
+            console.log('📡 Enviando datos de registro:', { name, email });
+            const result = await this.api.register({ name, email, password });
+
+            if (result.success) {
+                console.log('✅ Registro exitoso');
+                this.closeModal('registerModal');
+                this.onRegisterSuccess(result.user);
+            } else {
+                this.showError(errorDiv, result.message || 'Error en el registro');
+            }
+
+        } catch (error) {
+            console.error('❌ Error en registro:', error);
+            this.showError(errorDiv, 'Error de conexión con el servidor');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Registrarse';
+        }
     }
 
     onLoginSuccess(user) {
-        console.log('✅ Login exitoso:', user.name);
+        console.log('✅ Login exitoso:', user);
+        this.currentUser = user;
         this.showMessage(`🎉 ¡Bienvenido de nuevo, ${user.name}!`, 'success');
-        this.closeModal('loginModal');
         this.updateUIAfterAuth(user);
         this.saveSession(user);
     }
 
     onRegisterSuccess(user) {
-        console.log('✅ Registro exitoso:', user.name);
+        console.log('✅ Registro exitoso:', user);
+        this.currentUser = user;
         this.showMessage(`🎉 ¡Cuenta creada exitosamente, ${user.name}!`, 'success');
-        this.closeModal('registerModal');
         this.updateUIAfterAuth(user);
         this.saveSession(user);
     }
 
-    async showUserMenu(user) {
-    try {
-        // Si el usuario no tiene nombre, buscarlo
-        let userWithName = user;
-        
-        if (!user.name && user.email) {
-            userWithName = await this.getUserProfileByEmail(user.email);
-        }
-        
-        const displayName = userWithName?.name || user.email || 'Usuario';
-        const userInitial = displayName.charAt(0).toUpperCase();
-        
-        const authButtons = document.querySelector('.auth-buttons');
-        if (authButtons) {
-            authButtons.innerHTML = `
-                <div class="user-menu">
-                    <div class="user-info">
-                        <span class="user-greeting">Hola, ${displayName}</span>
-                        <button class="user-avatar" id="userMenuBtn">
-                            ${userInitial}
-                        </button>
-                    </div>
-                    <div class="user-dropdown" id="userDropdown">
-                        <div class="dropdown-item" id="viewProfileBtn">
-                            <i class="fas fa-user"></i>
-                            <span>Ver Perfil</span>
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-item" id="logoutBtn">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Cerrar Sesión</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            this.setupUserMenuListeners();
-        }
-    } catch (error) {
-        console.error('❌ Error mostrando menú de usuario:', error);
-    }
-}
-
     async updateUIAfterAuth(user) {
-    try {
-        console.log('🔄 Actualizando UI con usuario:', user);
-        
-        // Si el usuario no tiene nombre, buscarlo en la base de datos
-        let userWithName = user;
-        
-        if (!user.name && user.email) {
-            console.log('🔍 Usuario sin nombre, buscando en BD...');
-            userWithName = await this.getUserProfileByEmail(user.email);
-        }
-        
-        // Si aún no tenemos nombre, usar el email o un valor por defecto
-        const displayName = userWithName?.name || user.email || 'Usuario';
-        
-        const nav = document.querySelector('.nav');
-        if (nav) {
-            nav.innerHTML = `
-                 <a href="/Fronted/Pages/graficos.html" class="nav-link">Graficos</a>
-            <a href="/Fronted/Pages/Portafolio.html" class="nav-link">Portafolio</a>
-                <a href="#mercado" class="nav-link">Mercado</a>
-                <a href="#educacion" class="nav-link">Educación</a>
-                <div class="user-menu">
-                    <span class="user-greeting">👋 Hola, ${displayName}</span>
-                    <button id="logoutBtn" class="btn btn-outline">Cerrar Sesión</button>
-                </div>
-            `;
-
-            document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
+        try {
+            console.log('🔄 Actualizando UI con usuario:', user);
             
-            console.log('✅ UI actualizada correctamente');
+            const displayName = user.name || user.email || 'Usuario';
+            
+            const nav = document.querySelector('.nav');
+            if (nav) {
+                nav.innerHTML = `
+                    <a href="/Fronted/Pages/graficos.html" class="nav-link">Gráficos</a>
+                    <a href="/Fronted/Pages/Portafolio.html" class="nav-link">Portafolio</a>
+                    <a href="#mercado" class="nav-link">Mercado</a>
+                    <a href="#educacion" class="nav-link">Educación</a>
+                    <div class="user-menu">
+                        <span class="user-greeting">👋 Hola, ${displayName}</span>
+                        <button id="logoutBtn" class="btn btn-outline">Cerrar Sesión</button>
+                    </div>
+                `;
+
+                document.getElementById('logoutBtn').addEventListener('click', () => this.handleLogout());
+                
+                console.log('✅ UI actualizada correctamente');
+            }
+        } catch (error) {
+            console.error('❌ Error actualizando UI:', error);
         }
-    } catch (error) {
-        console.error('❌ Error actualizando UI:', error);
     }
-}
 
     handleLogout() {
         console.log('🚪 Cerrando sesión...');
         this.currentUser = null;
         this.clearSession();
+        
+        if (this.api) {
+            this.api.clearSession();
+        }
+        
         this.showMessage('👋 Sesión cerrada correctamente', 'info');
         this.restoreAuthButtons();
     }
@@ -462,27 +423,37 @@ class MainApp {
                     <button id="registerBtn" class="btn btn-primary">Registrarse</button>
                 </div>
             `;
-
+            
+            // Reconfigurar event listeners
             this.setupAuthSystem();
         }
     }
 
     saveSession(user) {
         localStorage.setItem('criptoUser', JSON.stringify(user));
+        if (user.token) {
+            localStorage.setItem('authToken', user.token);
+        }
     }
 
     clearSession() {
         localStorage.removeItem('criptoUser');
+        localStorage.removeItem('authToken');
     }
 
-    checkExistingSession() {
-        const userData = localStorage.getItem('criptoUser');
-        if (userData) {
+    async checkExistingSession() {
+        const token = localStorage.getItem('authToken');
+        
+        if (token && this.api) {
             try {
-                const user = JSON.parse(userData);
-                this.currentUser = user;
-                this.updateUIAfterAuth(user);
+                const result = await this.api.getProfile();
+                if (result.success && result.user) {
+                    this.currentUser = result.user;
+                    this.updateUIAfterAuth(result.user);
+                    console.log('✅ Sesión restaurada');
+                }
             } catch (error) {
+                console.log('⚠️ No se pudo restaurar la sesión');
                 this.clearSession();
             }
         }
@@ -491,6 +462,18 @@ class MainApp {
     validateEmail(email) {
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return re.test(email);
+    }
+
+    showError(errorElement, message) {
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            errorElement.classList.remove('hidden');
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+                errorElement.classList.add('hidden');
+            }, 5000);
+        }
     }
 
     showMessage(message, type = 'info') {

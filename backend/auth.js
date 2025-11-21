@@ -1,11 +1,18 @@
 // auth.js - Sistema de autenticación para Mundo Cripto
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { pool } = require('./database');
+//const { pool } = require('./database'); // Moved to be lazy-loaded
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mundo_cripto_secret_key_2024';
 
 class AuthSystem {
+
+    // Helper method to get the pool only when needed
+    // This avoids the initialization error at startup
+    getPool() {
+        return require('./database').pool;
+    }
+
     // Registrar usuario
     async registerUser(userData) {
         try {
@@ -29,7 +36,7 @@ class AuthSystem {
             }
 
             // Verificar si el usuario ya existe
-            const [existingUsers] = await pool.execute(
+            const [existingUsers] = await this.getPool().execute(
                 'SELECT id FROM users WHERE email = ?',
                 [email]
             );
@@ -46,15 +53,9 @@ class AuthSystem {
             const passwordHash = await bcrypt.hash(password, saltRounds);
             
             // Insertar usuario
-            const [result] = await pool.execute(
+            const [result] = await this.getPool().execute(
                 'INSERT INTO users (email, password_hash, name) VALUES (?, ?, ?)',
                 [email, passwordHash, name]
-            );
-            
-            // Crear perfil de usuario
-            await pool.execute(
-                'INSERT INTO user_profiles (user_id) VALUES (?)',
-                [result.insertId]
             );
             
             console.log(`✅ Usuario registrado exitosamente: ${email} (ID: ${result.insertId})`);
@@ -90,7 +91,7 @@ class AuthSystem {
             }
 
             // Buscar usuario
-            const [users] = await pool.execute(
+            const [users] = await this.getPool().execute(
                 `SELECT u.id, u.email, u.password_hash, u.name, u.is_active 
                  FROM users u WHERE u.email = ?`,
                 [email]
@@ -130,7 +131,7 @@ class AuthSystem {
             console.log('✅ Contraseña válida');
             
             // Actualizar último login
-            await pool.execute(
+            await this.getPool().execute(
                 'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?',
                 [user.id]
             );
@@ -196,11 +197,9 @@ async getUserProfile(userId) {
     try {
         console.log('📋 Obteniendo perfil para usuario ID:', userId);
         
-        const [users] = await pool.execute(
-            `SELECT u.id, u.email, u.name, u.created_at, u.last_login,  // ← Asegurar que u.name está en el SELECT
-                    up.experience_level, up.interests
-             FROM users u 
-             LEFT JOIN user_profiles up ON u.id = up.user_id
+        const [users] = await this.getPool().execute(
+            `SELECT u.id, u.email, u.name, u.created_at, u.last_login
+             FROM users u
              WHERE u.id = ?`,
             [userId]
         );
@@ -227,9 +226,7 @@ async getUserProfile(userId) {
                 email: user.email,
                 name: user.name,  // ← Asegurar que se envía el name
                 created_at: user.created_at,
-                last_login: user.last_login,
-                experience_level: user.experience_level,
-                interests: user.interests
+                last_login: user.last_login
             }
         };
     } catch (error) {
@@ -245,7 +242,7 @@ async getUserProfile(userId) {
     async healthCheck() {
         try {
             // Verificar conexión a la base de datos
-            const [result] = await pool.execute('SELECT 1 as health');
+            const [result] = await this.getPool().execute('SELECT 1 as health');
             return {
                 success: true,
                 message: 'Sistema de autenticación funcionando correctamente',

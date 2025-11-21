@@ -1,4 +1,8 @@
-// Datos de criptomonedas (más ampliados)
+// =============================================
+// PORTAFOLIO.JS - VERSIÓN CORREGIDA
+// =============================================
+
+// Datos de criptomonedas
 let cryptoData = {
     bitcoin: { name: "Bitcoin", symbol: "BTC", price: 45000, change: 0, icon: "₿" },
     ethereum: { name: "Ethereum", symbol: "ETH", price: 3000, change: 0, icon: "Ξ" },
@@ -9,17 +13,7 @@ let cryptoData = {
     polkadot: { name: "Polkadot", symbol: "DOT", price: 8.5, change: 0, icon: "●" },
     litecoin: { name: "Litecoin", symbol: "LTC", price: 75, change: 0, icon: "Ł" },
     chainlink: { name: "Chainlink", symbol: "LINK", price: 18, change: 0, icon: "◘" },
-    stellar: { name: "Stellar", symbol: "XLM", price: 0.35, change: 0, icon: "*" },
-    monero: { name: "Monero", symbol: "XMR", price: 165, change: 0, icon: "ɱ" },
-    tezos: { name: "Tezos", symbol: "XTZ", price: 1.5, change: 0, icon: "ꜩ" },
-    eos: { name: "EOS", symbol: "EOS", price: 1.2, change: 0, icon: "ε" },
-    tron: { name: "Tron", symbol: "TRX", price: 0.12, change: 0, icon: "T" },
-    neo: { name: "Neo", symbol: "NEO", price: 12, change: 0, icon: "N" },
-    vechain: { name: "Vechain", symbol: "VET", price: 0.03, change: 0, icon: "V" },
-    cosmos: { name: "Cosmos", symbol: "ATOM", price: 10, change: 0, icon: "⚛" },
-    algorand: { name: "Algorand", symbol: "ALGO", price: 0.35, change: 0, icon: "Ⱥ" },
-    filecoin: { name: "Filecoin", symbol: "FIL", price: 8, change: 0, icon: "⨎" },
-    avalanche: { name: "Avalanche", symbol: "AVAX", price: 35, change: 0, icon: "A" }
+    stellar: { name: "Stellar", symbol: "XLM", price: 0.35, change: 0, icon: "*" }
 };
 
 // Configuración de comisiones
@@ -27,7 +21,7 @@ const tradingFee = 0.0025; // 0.25%
 const withdrawalFee = 0.015; // 1.5%
 const minWithdrawalFee = 5; // $5 mínimo
 
-// Estado del portafolio del usuario
+// Estado del portafolio
 let portfolio = {
     balance: 0,
     availableBalance: 0,
@@ -37,68 +31,277 @@ let portfolio = {
     totalInvested: 0
 };
 
-// Historial de transacciones
 let transactionHistory = [];
+let portfolioLoaded = false;
 
-// Elementos del DOM
-const totalBalanceElement = document.getElementById('total-balance');
-const availableBalanceElement = document.getElementById('available-balance');
-const investedAmountElement = document.getElementById('invested-amount');
-const totalProfitElement = document.getElementById('total-profit');
-const profitPercentageElement = document.getElementById('profit-percentage');
-const marketPricesElement = document.getElementById('market-prices');
-const portfolioListElement = document.getElementById('portfolio-list');
-const emptyPortfolioElement = document.getElementById('empty-portfolio');
-const cryptoSelectElement = document.getElementById('crypto-select');
-const investmentAmountElement = document.getElementById('investment-amount');
-const cryptoAmountElement = document.getElementById('crypto-amount');
-const buyButtonElement = document.getElementById('buy-button');
-const transactionHistoryElement = document.getElementById('transaction-history');
-const amountButtons = document.querySelectorAll('.amount-buttons button');
-const themeToggleButton = document.getElementById('theme-toggle');
-const setupModal = document.getElementById('setup-modal');
-const initialBalanceInput = document.getElementById('initial-balance');
-const startTradingButton = document.getElementById('start-trading');
-const balancePresets = document.querySelectorAll('.balance-presets button');
-const refreshPricesButton = document.getElementById('refresh-prices');
-const sellModalBtn = document.getElementById('sell-modal-btn');
-const sellModal = document.getElementById('sell-modal');
-const closeSellModal = document.getElementById('close-sell-modal');
-const sellCryptoSelect = document.getElementById('sell-crypto-select');
-const sellPercentage = document.getElementById('sell-percentage');
-const sellPercentageValue = document.getElementById('sell-percentage-value');
-const sellCurrentValue = document.getElementById('sell-current-value');
-const sellProfit = document.getElementById('sell-profit');
-const confirmSellButton = document.getElementById('confirm-sell');
-const withdrawAmountElement = document.getElementById('withdraw-amount');
-const withdrawButton = document.getElementById('withdraw-button');
+// =============================================
+// FUNCIONES DE USUARIO Y STORAGE
+// =============================================
 
-function init() {
-    // Configurar el selector de criptomonedas
-    populateCryptoSelect();
-    
-    // Configurar eventos
-    setupEventListeners();
-    
-    // Configurar el input de capital inicial
-    initialBalanceInput.addEventListener('input', validateInitialBalance);
-    
-    // Mostrar modal de configuración inicial
-    setupModal.style.display = 'flex';
-    
-    // Actualizar precios cada 5 segundos (simulación)
-    setInterval(updateMarketPrices, 5000);
-    
-    // Validación inicial
-    validateInitialBalance();
-    
-    // Configurar autoguardado
-    setupPortfolioAutoSave();
+function getCurrentUserId() {
+    try {
+        const userData = localStorage.getItem('currentUser');
+        if (userData) {
+            const user = JSON.parse(userData);
+            return user.id || user.email || 'guest';
+        }
+    } catch (error) {
+        console.error('❌ Error obteniendo userId:', error);
+    }
+    return 'guest';
 }
 
-// Configurar event listeners
+function getPortfolioStorageKey() {
+    const userId = getCurrentUserId();
+    return `crypto_portfolio_${userId}`;
+}
+
+function savePortfolioState() {
+    try {
+        const portfolioState = {
+            userId: getCurrentUserId(),
+            balance: portfolio.balance,
+            availableBalance: portfolio.availableBalance,
+            investments: portfolio.investments,
+            totalProfit: portfolio.totalProfit,
+            totalProfitPercentage: portfolio.totalProfitPercentage,
+            totalInvested: portfolio.totalInvested,
+            transactionHistory: transactionHistory,
+            timestamp: new Date().toISOString()
+        };
+        
+        const storageKey = getPortfolioStorageKey();
+        localStorage.setItem(storageKey, JSON.stringify(portfolioState));
+        console.log(`💾 Portafolio guardado para usuario: ${getCurrentUserId()}`);
+        
+        return true;
+    } catch (error) {
+        console.error('❌ Error guardando portafolio:', error);
+        return false;
+    }
+}
+
+function loadPortfolioState() {
+    try {
+        const storageKey = getPortfolioStorageKey();
+        const savedState = localStorage.getItem(storageKey);
+        
+        if (!savedState) {
+            console.log(`ℹ️ No hay portafolio guardado para usuario: ${getCurrentUserId()}`);
+            return false;
+        }
+        
+        const portfolioState = JSON.parse(savedState);
+        
+        // Verificar que el portafolio sea del usuario correcto
+        if (portfolioState.userId !== getCurrentUserId()) {
+            console.warn('⚠️ Portafolio de otro usuario, ignorando...');
+            return false;
+        }
+        
+        // Restaurar el estado
+        portfolio.balance = portfolioState.balance || 0;
+        portfolio.availableBalance = portfolioState.availableBalance || 0;
+        portfolio.totalInvested = portfolioState.totalInvested || 0;
+        portfolio.totalProfit = portfolioState.totalProfit || 0;
+        portfolio.totalProfitPercentage = portfolioState.totalProfitPercentage || 0;
+        
+        // Restaurar inversiones
+        if (Array.isArray(portfolioState.investments)) {
+            portfolio.investments = portfolioState.investments;
+        }
+        
+        // Restaurar historial
+        if (Array.isArray(portfolioState.transactionHistory)) {
+            transactionHistory = portfolioState.transactionHistory.map(tx => ({
+                ...tx,
+                timestamp: new Date(tx.timestamp)
+            }));
+        }
+        
+        console.log(`✅ Portafolio restaurado para usuario: ${getCurrentUserId()}`);
+        return true;
+        
+    } catch (error) {
+        console.error('❌ Error cargando portafolio:', error);
+        return false;
+    }
+}
+
+function clearCurrentUserPortfolio() {
+    try {
+        const storageKey = getPortfolioStorageKey();
+        localStorage.removeItem(storageKey);
+        console.log(`🧹 Portafolio limpiado para usuario: ${getCurrentUserId()}`);
+        return true;
+    } catch (error) {
+        console.error('❌ Error limpiando portafolio:', error);
+        return false;
+    }
+}
+
+// =============================================
+// EVENTOS DE USUARIO
+// =============================================
+
+window.addEventListener('userLoggedIn', function(event) {
+    console.log('👤 Usuario cambió, recargando portafolio...');
+    
+    // Limpiar portafolio actual en memoria
+    portfolio = {
+        balance: 0,
+        availableBalance: 0,
+        investments: [],
+        totalProfit: 0,
+        totalProfitPercentage: 0,
+        totalInvested: 0
+    };
+    transactionHistory = [];
+    
+    // Intentar cargar portafolio del nuevo usuario
+    const loaded = loadPortfolioState();
+    
+    if (loaded && portfolio.balance > 0) {
+        updatePortfolioDisplay();
+        updateTransactionHistory();
+        if (setupModal) setupModal.style.display = 'none';
+    } else {
+        if (setupModal) setupModal.style.display = 'flex';
+    }
+});
+
+window.addEventListener('userLoggedOut', function() {
+    console.log('👤 Usuario cerró sesión, limpiando portafolio...');
+    
+    portfolio = {
+        balance: 0,
+        availableBalance: 0,
+        investments: [],
+        totalProfit: 0,
+        totalProfitPercentage: 0,
+        totalInvested: 0
+    };
+    transactionHistory = [];
+    
+    updatePortfolioDisplay();
+    updateTransactionHistory();
+});
+
+// =============================================
+// ELEMENTOS DEL DOM
+// =============================================
+
+let totalBalanceElement, availableBalanceElement, investedAmountElement;
+let totalProfitElement, profitPercentageElement, marketPricesElement;
+let portfolioListElement, emptyPortfolioElement, cryptoSelectElement;
+let investmentAmountElement, cryptoAmountElement, buyButtonElement;
+let transactionHistoryElement, amountButtons, setupModal;
+let initialBalanceInput, startTradingButton, balancePresets;
+let refreshPricesButton, sellModalBtn, sellModal, closeSellModal;
+let sellCryptoSelect, sellPercentage, sellPercentageValue;
+let sellCurrentValue, sellProfit, confirmSellButton;
+let withdrawAmountElement, withdrawButton;
+
+function initializeElements() {
+    totalBalanceElement = document.getElementById('total-balance');
+    availableBalanceElement = document.getElementById('available-balance');
+    investedAmountElement = document.getElementById('invested-amount');
+    totalProfitElement = document.getElementById('total-profit');
+    profitPercentageElement = document.getElementById('profit-percentage');
+    marketPricesElement = document.getElementById('market-prices');
+    portfolioListElement = document.getElementById('portfolio-list');
+    emptyPortfolioElement = document.getElementById('empty-portfolio');
+    cryptoSelectElement = document.getElementById('crypto-select');
+    investmentAmountElement = document.getElementById('investment-amount');
+    cryptoAmountElement = document.getElementById('crypto-amount');
+    buyButtonElement = document.getElementById('buy-button');
+    transactionHistoryElement = document.getElementById('transaction-history');
+    amountButtons = document.querySelectorAll('.amount-buttons button');
+    setupModal = document.getElementById('setup-modal');
+    initialBalanceInput = document.getElementById('initial-balance');
+    startTradingButton = document.getElementById('start-trading');
+    balancePresets = document.querySelectorAll('.balance-presets button');
+    refreshPricesButton = document.getElementById('refresh-prices');
+    sellModalBtn = document.getElementById('sell-modal-btn');
+    sellModal = document.getElementById('sell-modal');
+    closeSellModal = document.getElementById('close-sell-modal');
+    sellCryptoSelect = document.getElementById('sell-crypto-select');
+    sellPercentage = document.getElementById('sell-percentage');
+    sellPercentageValue = document.getElementById('sell-percentage-value');
+    sellCurrentValue = document.getElementById('sell-current-value');
+    sellProfit = document.getElementById('sell-profit');
+    confirmSellButton = document.getElementById('confirm-sell');
+    withdrawAmountElement = document.getElementById('withdraw-amount');
+    withdrawButton = document.getElementById('withdraw-button');
+}
+
+// =============================================
+// INICIALIZACIÓN
+// =============================================
+
+function init() {
+    console.log('🚀 Inicializando portafolio...');
+    
+    // Verificar que hay usuario logueado
+    const userData = localStorage.getItem('currentUser');
+    if (!userData) {
+        console.warn('⚠️ No hay usuario logueado, usando modo invitado');
+        // NO redirigir, permitir modo invitado
+        // alert('⚠️ Debes iniciar sesión para usar el portafolio');
+        // window.location.href = '/Fronted/index.html';
+        // return;
+    }
+    
+    initializeElements();
+    
+    const portfolioRestored = loadPortfolioState();
+    
+    if (portfolioRestored && portfolio.balance > 0) {
+        console.log('✅ Portafolio restaurado desde storage');
+        portfolioLoaded = true;
+        
+        if (setupModal) setupModal.style.display = 'none';
+        
+        updatePortfolioDisplay();
+        updateTransactionHistory();
+        updateMarketPrices();
+        
+    } else {
+        console.log('ℹ️ No hay portafolio guardado, mostrando configuración');
+        if (setupModal) setupModal.style.display = 'flex';
+    }
+    
+    populateCryptoSelect();
+    setupEventListeners();
+    
+    if (initialBalanceInput) {
+        initialBalanceInput.addEventListener('input', validateInitialBalance);
+    }
+    
+    setInterval(updateMarketPrices, 5000);
+    
+    validateInitialBalance();
+    
+    setInterval(() => {
+        if (portfolio.balance > 0) {
+            savePortfolioState();
+        }
+    }, 30000);
+    
+    window.addEventListener('beforeunload', () => {
+        if (portfolio.balance > 0) {
+            savePortfolioState();
+        }
+    });
+    
+    console.log('✅ Portafolio inicializado');
+}
+
+// =============================================
+// EVENT LISTENERS
+// =============================================
+
 function setupEventListeners() {
-    // Solo agregar listeners si los elementos existen
     if (buyButtonElement) {
         buyButtonElement.addEventListener('click', handleBuy);
     }
@@ -111,7 +314,6 @@ function setupEventListeners() {
         cryptoSelectElement.addEventListener('change', updateCryptoAmount);
     }
     
-    // Botones de porcentaje rápido
     amountButtons.forEach(button => {
         button.addEventListener('click', () => {
             const percent = parseFloat(button.getAttribute('data-percent'));
@@ -123,7 +325,6 @@ function setupEventListeners() {
         });
     });
     
-    // Configuración inicial - verificar que existen
     if (startTradingButton) {
         startTradingButton.addEventListener('click', startTrading);
     }
@@ -140,12 +341,10 @@ function setupEventListeners() {
         });
     }
     
-    // Refrescar precios manualmente
     if (refreshPricesButton) {
         refreshPricesButton.addEventListener('click', updateMarketPrices);
     }
     
-    // Modal de venta - verificar existencia
     if (sellModalBtn) {
         sellModalBtn.addEventListener('click', openSellModal);
     }
@@ -162,27 +361,18 @@ function setupEventListeners() {
         confirmSellButton.addEventListener('click', handleSell);
     }
     
-    // Retiro de fondos
     if (withdrawButton) {
         withdrawButton.addEventListener('click', handleWithdraw);
     }
 }
 
-function validateInitialBalance() {
-    const initialBalance = parseFloat(initialBalanceInput.value);
-    const startButton = document.getElementById('start-trading');
-    
-    if (isNaN(initialBalance) || initialBalance < 100 || initialBalance > 1000000) {
-        startButton.disabled = true;
-        initialBalanceInput.style.borderColor = 'var(--loss)';
-    } else {
-        startButton.disabled = false;
-        initialBalanceInput.style.borderColor = 'var(--profit)';
-    }
-}
+// =============================================
+// FUNCIONES DE TRADING (continuaría...)
+// =============================================
 
-// Poblar selector de criptomonedas
 function populateCryptoSelect() {
+    if (!cryptoSelectElement) return;
+    
     cryptoSelectElement.innerHTML = '';
     
     for (const crypto in cryptoData) {
@@ -193,75 +383,69 @@ function populateCryptoSelect() {
     }
 }
 
-// Alternar entre tema claro y oscuro
-function toggleTheme() {
-    const currentTheme = document.body.getAttribute('data-theme') || 'dark';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+function validateInitialBalance() {
+    if (!initialBalanceInput || !startTradingButton) return;
     
-    document.body.setAttribute('data-theme', newTheme);
+    const initialBalance = parseFloat(initialBalanceInput.value);
     
-    const icon = themeToggleButton.querySelector('i');
-    icon.className = newTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    if (isNaN(initialBalance) || initialBalance < 100 || initialBalance > 1000000) {
+        startTradingButton.disabled = true;
+        initialBalanceInput.style.borderColor = '#ef4444';
+    } else {
+        startTradingButton.disabled = false;
+        initialBalanceInput.style.borderColor = '#10b981';
+    }
 }
 
-// Iniciar trading con el capital inicial
 function startTrading() {
     const initialBalance = parseFloat(initialBalanceInput.value);
     
-    // Validaciones más robustas
     if (isNaN(initialBalance) || initialBalance < 100) {
         alert('El capital inicial debe ser de al menos $100');
-        initialBalanceInput.focus();
         return;
     }
     
     if (initialBalance > 1000000) {
         alert('El capital inicial no puede exceder $1,000,000');
-        initialBalanceInput.focus();
         return;
     }
     
-    // Configurar el portafolio
     portfolio.balance = initialBalance;
     portfolio.availableBalance = initialBalance;
+    portfolioLoaded = true;
     
-    // Ocultar modal
-    setupModal.style.display = 'none';
+    savePortfolioState();
     
-    // Inicializar componentes
+    if (setupModal) setupModal.style.display = 'none';
+    
     updateMarketPrices();
     updatePortfolioDisplay();
     updateTransactionHistory();
     updateCryptoAmount();
     
-    // Mostrar mensaje de bienvenida
     setTimeout(() => {
-        alert(`¡Bienvenido a CryptoSim! Tu capital inicial de $${initialBalance.toLocaleString()} ha sido configurado. ¡Buena suerte en tus inversiones!`);
+        alert(`¡Bienvenido! Tu capital inicial de $${initialBalance.toLocaleString()} ha sido configurado.`);
     }, 500);
 }
 
-// Actualizar precios del mercado (simulación)
 function updateMarketPrices() {
-    // Generar cambios aleatorios en los precios
     for (const crypto in cryptoData) {
-        // Cambio entre -5% y +5%
         const changePercent = (Math.random() * 10 - 5) / 100;
         cryptoData[crypto].change = changePercent * 100;
         cryptoData[crypto].price *= (1 + changePercent);
         
-        // Asegurar que los precios no bajen de cierto umbral
         if (cryptoData[crypto].price < 0.01) {
             cryptoData[crypto].price = 0.01;
         }
     }
     
-    // Actualizar la visualización de precios
+    if (!marketPricesElement) return;
+    
     marketPricesElement.innerHTML = '';
     
     for (const crypto in cryptoData) {
         const priceElement = document.createElement('div');
         priceElement.className = 'crypto-price';
-        priceElement.setAttribute('data-symbol', cryptoData[crypto].symbol);
         
         const changeClass = cryptoData[crypto].change >= 0 ? 'profit' : 'loss';
         const changeSymbol = cryptoData[crypto].change >= 0 ? '+' : '';
@@ -279,23 +463,15 @@ function updateMarketPrices() {
             </div>
         `;
         
-        // Agregar event listener para selección rápida
-        priceElement.addEventListener('click', () => {
-            selectCryptoFromMarket(cryptoData[crypto].symbol);
-        });
-        
-        // Agregar efecto hover con tooltip
-        priceElement.title = `Haz clic para seleccionar ${cryptoData[crypto].name}`;
-        
         marketPricesElement.appendChild(priceElement);
     }
     
-    // Actualizar valores del portafolio
     updatePortfolioValues();
 }
 
-// Actualizar la cantidad de criptomoneda a comprar
 function updateCryptoAmount() {
+    if (!cryptoSelectElement || !investmentAmountElement || !cryptoAmountElement) return;
+    
     const selectedCrypto = cryptoSelectElement.value;
     const investmentAmount = parseFloat(investmentAmountElement.value) || 0;
     const cryptoPrice = cryptoData[selectedCrypto].price;
@@ -307,22 +483,19 @@ function updateCryptoAmount() {
         cryptoAmountElement.value = '0';
     }
     
-    // Validar si el monto es suficiente
     if (investmentAmount > portfolio.availableBalance) {
         buyButtonElement.disabled = true;
-        investmentAmountElement.style.borderColor = 'var(--loss)';
+        investmentAmountElement.style.borderColor = '#ef4444';
     } else {
         buyButtonElement.disabled = false;
         investmentAmountElement.style.borderColor = '';
     }
 }
 
-// Manejar la compra de criptomonedas
 async function handleBuy() {
     const selectedCrypto = cryptoSelectElement.value;
     const investmentAmount = parseFloat(investmentAmountElement.value);
     
-    // Validaciones
     if (investmentAmount <= 0) {
         alert('Por favor, ingresa un monto válido');
         return;
@@ -343,13 +516,11 @@ async function handleBuy() {
     const tradingFeeAmount = investmentAmount * tradingFee;
     const totalCost = investmentAmount + tradingFeeAmount;
     
-    // Verificar si hay fondos suficientes incluyendo la comisión
     if (totalCost > portfolio.availableBalance) {
         alert(`Fondos insuficientes. Incluyendo comisión de $${tradingFeeAmount.toFixed(2)}, necesitas $${totalCost.toFixed(2)}`);
         return;
     }
     
-    // Crear nueva inversión
     const newInvestment = {
         id: Date.now(),
         crypto: selectedCrypto,
@@ -362,12 +533,10 @@ async function handleBuy() {
         profitPercentage: 0
     };
     
-    // Agregar al portafolio
     portfolio.investments.push(newInvestment);
     portfolio.availableBalance -= totalCost;
     portfolio.totalInvested += investmentAmount;
     
-    // Agregar al historial
     const transaction = {
         type: 'buy',
         crypto: selectedCrypto,
@@ -378,28 +547,288 @@ async function handleBuy() {
     };
     transactionHistory.unshift(transaction);
     
-    // ✅ GUARDAR EN BASE DE DATOS
-    await saveTransactionToDatabase(transaction);
+    savePortfolioState();
     
-    // Actualizar visualizaciones
+    updatePortfolioDisplay();
+    updateTransactionHistory();
+    closeSellModalFunc();
+    
+    const profitSymbol = profit >= 0 ? '+' : '';
+    alert(`¡Has vendido ${sellAmount.toFixed(6)} ${cryptoData[investment.crypto].symbol} por ${currentValue.toFixed(2)}! Comisión: ${tradingFeeAmount.toFixed(2)}. Ganancia/Pérdida: ${profitSymbol}${Math.abs(profit).toFixed(2)}`);
+}
+
+async function handleWithdraw() {
+    const withdrawAmount = parseFloat(withdrawAmountElement.value);
+    
+    if (withdrawAmount <= 0) {
+        alert('Por favor, ingresa un monto válido');
+        return;
+    }
+    
+    if (withdrawAmount > portfolio.availableBalance) {
+        alert('Fondos insuficientes para realizar el retiro');
+        return;
+    }
+    
+    if (withdrawAmount < 10) {
+        alert('El monto mínimo de retiro es $10');
+        return;
+    }
+    
+    let withdrawalFeeAmount = withdrawAmount * withdrawalFee;
+    if (withdrawalFeeAmount < minWithdrawalFee) {
+        withdrawalFeeAmount = minWithdrawalFee;
+    }
+    
+    const netAmount = withdrawAmount - withdrawalFeeAmount;
+    
+    if (netAmount <= 0) {
+        alert('El monto de retiro es insuficiente para cubrir la comisión');
+        return;
+    }
+    
+    const confirmWithdraw = confirm(
+        `¿Estás seguro de que quieres retirar ${withdrawAmount.toFixed(2)}?\n` +
+        `Comisión de retiro: ${withdrawalFeeAmount.toFixed(2)}\n` +
+        `Recibirás: ${netAmount.toFixed(2)}`
+    );
+    
+    if (!confirmWithdraw) return;
+    
+    portfolio.availableBalance -= withdrawAmount;
+    portfolio.balance -= withdrawAmount;
+    
+    const transaction = {
+        type: 'withdraw',
+        value: withdrawAmount,
+        fee: withdrawalFeeAmount,
+        timestamp: new Date()
+    };
+    transactionHistory.unshift(transaction);
+    
+    savePortfolioState();
+    
     updatePortfolioDisplay();
     updateTransactionHistory();
     
-    // Resetear formulario
+    withdrawAmountElement.value = '100';
+    
+    alert(`¡Retiro exitoso! Has retirado ${withdrawAmount.toFixed(2)}. Comisión: ${withdrawalFeeAmount.toFixed(2)}. Neto: ${netAmount.toFixed(2)}`);
+}
+
+function resetPortfolio() {
+    if (confirm('⚠️ ¿Estás seguro de que quieres reiniciar el portafolio? Se perderán todos los datos.')) {
+        clearCurrentUserPortfolio();
+        location.reload();
+    }
+}
+
+// =============================================
+// EXPORTAR A EXCEL
+// =============================================
+
+function addExportButtonToHeader() {
+    console.log('📊 Agregando botón de exportar...');
+    
+    if (document.getElementById('export-portfolio-btn')) {
+        console.log('ℹ️ Botón de exportar ya existe');
+        return;
+    }
+    
+    const exportContainer = document.createElement('div');
+    exportContainer.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 999;
+    `;
+    
+    const exportBtn = document.createElement('button');
+    exportBtn.id = 'export-portfolio-btn';
+    exportBtn.innerHTML = '<i class="fas fa-file-excel"></i> Exportar';
+    exportBtn.style.cssText = `
+        background: linear-gradient(135deg, #10b981, #059669) !important;
+        color: white !important;
+        border: none !important;
+        padding: 12px 24px !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        cursor: pointer !important;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        transition: all 0.3s ease !important;
+    `;
+    
+    exportBtn.onmouseover = function() {
+        this.style.transform = 'translateY(-2px)';
+        this.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.5)';
+    };
+    
+    exportBtn.onmouseout = function() {
+        this.style.transform = 'translateY(0)';
+        this.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.4)';
+    };
+    
+    exportBtn.onclick = exportPortfolioToExcel;
+    
+    exportContainer.appendChild(exportBtn);
+    document.body.appendChild(exportContainer);
+    
+    console.log('✅ Botón de exportar agregado');
+}
+
+function exportPortfolioToExcel() {
+    console.log('📊 Exportando portafolio...');
+    
+    if (typeof XLSX === 'undefined') {
+        alert('❌ Error: La librería de Excel no está cargada.\n\nAgrega esto al HTML:\n<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>');
+        return;
+    }
+    
+    try {
+        const workbook = XLSX.utils.book_new();
+        
+        // 1. HOJA DE RESUMEN
+        const summaryData = [
+            ['RESUMEN DEL PORTAFOLIO'],
+            [''],
+            ['Métrica', 'Valor'],
+            ['Balance Total', `${portfolio.balance.toFixed(2)}`],
+            ['Disponible', `${portfolio.availableBalance.toFixed(2)}`],
+            ['Invertido', `${portfolio.totalInvested.toFixed(2)}`],
+            ['Ganancia/Pérdida', `${portfolio.totalProfit.toFixed(2)}`],
+            ['Porcentaje', `${portfolio.totalProfitPercentage.toFixed(2)}%`],
+            ['Número de Inversiones', portfolio.investments.length],
+            ['Usuario', getCurrentUserId()],
+            [''],
+            ['Fecha de Exportación', new Date().toLocaleString('es-ES')]
+        ];
+        
+        const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+        XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumen');
+        
+        // 2. HOJA DE INVERSIONES ACTUALES
+        if (portfolio.investments.length > 0) {
+            const investmentsData = [
+                ['Criptomoneda', 'Cantidad', 'Precio Compra', 'Precio Actual', 'Inversión', 'Valor Actual', 'Ganancia/Pérdida', '%']
+            ];
+            
+            portfolio.investments.forEach(inv => {
+                investmentsData.push([
+                    cryptoData[inv.crypto].name,
+                    inv.amount.toFixed(6),
+                    `${inv.purchasePrice.toFixed(2)}`,
+                    `${inv.currentPrice.toFixed(2)}`,
+                    `${inv.investmentValue.toFixed(2)}`,
+                    `${inv.currentValue.toFixed(2)}`,
+                    `${inv.profit.toFixed(2)}`,
+                    `${inv.profitPercentage.toFixed(2)}%`
+                ]);
+            });
+            
+            const investmentsSheet = XLSX.utils.aoa_to_sheet(investmentsData);
+            XLSX.utils.book_append_sheet(workbook, investmentsSheet, 'Inversiones');
+        }
+        
+        // 3. HOJA DE HISTORIAL
+        if (transactionHistory.length > 0) {
+            const historyData = [
+                ['Tipo', 'Criptomoneda', 'Cantidad', 'Valor', 'Comisión', 'Fecha']
+            ];
+            
+            transactionHistory.forEach(tx => {
+                const cryptoName = tx.crypto ? cryptoData[tx.crypto].name : 'N/A';
+                historyData.push([
+                    tx.type === 'buy' ? 'Compra' : tx.type === 'sell' ? 'Venta' : 'Retiro',
+                    cryptoName,
+                    tx.amount ? tx.amount.toFixed(6) : 'N/A',
+                    `${tx.value.toFixed(2)}`,
+                    tx.fee ? `${tx.fee.toFixed(2)}` : '$0.00',
+                    tx.timestamp.toLocaleString('es-ES')
+                ]);
+            });
+            
+            const historySheet = XLSX.utils.aoa_to_sheet(historyData);
+            XLSX.utils.book_append_sheet(workbook, historySheet, 'Historial');
+        }
+        
+        const fileName = `Portafolio_${getCurrentUserId()}_${new Date().toISOString().split('T')[0]}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
+        
+        showExportNotification('✅ Portafolio exportado correctamente', 'success');
+        console.log('✅ Archivo Excel generado:', fileName);
+        
+    } catch (error) {
+        console.error('❌ Error exportando:', error);
+        showExportNotification('❌ Error al exportar el portafolio', 'error');
+    }
+}
+
+function showExportNotification(message, type = 'success') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: ${type === 'success' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)'};
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        z-index: 10000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transform: translateX(400px);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    `;
+    
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 10);
+
+    setTimeout(() => {
+        notification.style.transform = 'translateX(400px)';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// =============================================
+// INICIALIZACIÓN CUANDO CARGA LA PÁGINA
+// =============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    init();
+    setTimeout(addExportButtonToHeader, 500);
+});
+
+if (document.readyState === 'complete') {
+    setTimeout(addExportButtonToHeader, 500);
+}
+
+console.log('✅ Sistema de portafolios por usuario cargado');
+    updateTransactionHistory();
+    
     investmentAmountElement.value = '100';
     updateCryptoAmount();
     
-    // Mostrar confirmación
-    alert(`¡Has comprado ${cryptoAmount.toFixed(6)} ${cryptoData[selectedCrypto].symbol} por $${investmentAmount.toFixed(2)}! Comisión: $${tradingFeeAmount.toFixed(2)}`);
-}
+    alert(`¡Has comprado ${cryptoAmount.toFixed(6)} ${cryptoData[selectedCrypto].symbol} por $${investmentAmount.toFixed(2)}!`);
 
-// Actualizar valores del portafolio
+
 function updatePortfolioValues() {
     let totalValue = portfolio.availableBalance;
     let totalInvestment = 0;
-    
-    // Limpiar inversiones con cantidad 0 antes de calcular
-    cleanZeroInvestments();
     
     portfolio.investments.forEach(investment => {
         investment.currentPrice = cryptoData[investment.crypto].price;
@@ -414,7 +843,8 @@ function updatePortfolioValues() {
     portfolio.totalProfit = totalValue - portfolio.balance;
     portfolio.totalProfitPercentage = (portfolio.totalProfit / portfolio.balance) * 100;
     
-    // Actualizar elementos del DOM
+    if (!totalBalanceElement) return;
+    
     totalBalanceElement.textContent = totalValue.toFixed(2);
     availableBalanceElement.textContent = portfolio.availableBalance.toFixed(2);
     investedAmountElement.textContent = totalInvestment.toFixed(2);
@@ -428,53 +858,29 @@ function updatePortfolioValues() {
     profitPercentageElement.textContent = `(${profitSymbol}${Math.abs(portfolio.totalProfitPercentage).toFixed(2)}%)`;
     profitPercentageElement.className = profitClass;
     
-    // Habilitar/deshabilitar botón de vender
-    sellModalBtn.disabled = portfolio.investments.length === 0;
-}
-
-function selectCryptoFromMarket(cryptoSymbol) {
-    // Encontrar la clave de la criptomoneda basado en el símbolo
-    for (const cryptoKey in cryptoData) {
-        if (cryptoData[cryptoKey].symbol === cryptoSymbol) {
-            cryptoSelectElement.value = cryptoKey;
-            updateCryptoAmount();
-            
-            // Hacer scroll suave a la sección de trading
-            document.querySelector('.trading-section').scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-            
-            // Efecto visual de confirmación
-            const tradingSection = document.querySelector('.trading-section');
-            tradingSection.style.boxShadow = '0 0 0 3px var(--accent-primary)';
-            setTimeout(() => {
-                tradingSection.style.boxShadow = '';
-            }, 2000);
-            
-            break;
-        }
+    if (sellModalBtn) {
+        sellModalBtn.disabled = portfolio.investments.length === 0;
     }
 }
 
-// Actualizar visualización del portafolio
 function updatePortfolioDisplay() {
     updatePortfolioValues();
     
+    if (!portfolioListElement) return;
+    
     if (portfolio.investments.length === 0) {
-        emptyPortfolioElement.style.display = 'block';
+        if (emptyPortfolioElement) emptyPortfolioElement.style.display = 'block';
         portfolioListElement.innerHTML = '';
-        portfolioListElement.appendChild(emptyPortfolioElement);
+        if (emptyPortfolioElement) portfolioListElement.appendChild(emptyPortfolioElement);
         return;
     }
     
-    emptyPortfolioElement.style.display = 'none';
+    if (emptyPortfolioElement) emptyPortfolioElement.style.display = 'none';
     portfolioListElement.innerHTML = '';
     
     portfolio.investments.forEach(investment => {
         const investmentElement = document.createElement('div');
         investmentElement.className = 'investment-item';
-        investmentElement.setAttribute('data-id', investment.id);
         
         const profitClass = investment.profit >= 0 ? 'profit' : 'loss';
         const profitSymbol = investment.profit >= 0 ? '+' : '';
@@ -501,27 +907,9 @@ function updatePortfolioDisplay() {
     });
 }
 
-// Este código va en CADA página donde quieras mostrar el nombre
-function checkIfUserIsLoggedIn() {
-    // 1. Obtener datos del usuario guardados
-    const userData = localStorage.getItem('currentUser');
-    
-    // 2. Si NO hay usuario, mostrar botones normales
-    if (!userData) {
-        return false;
-    }
-    
-    // 3. Si SÍ hay usuario, convertirlo de texto a objeto
-    const user = JSON.parse(userData);
-    return user;
-}
-
-
-
-
-
-// Actualizar historial de transacciones
 function updateTransactionHistory() {
+    if (!transactionHistoryElement) return;
+    
     transactionHistoryElement.innerHTML = '';
     
     if (transactionHistory.length === 0) {
@@ -566,17 +954,14 @@ function updateTransactionHistory() {
     });
 }
 
-// Abrir modal de venta
 function openSellModal() {
     if (portfolio.investments.length === 0) {
         alert('No tienes inversiones para vender');
         return;
     }
     
-    // Poblar selector de inversiones
     sellCryptoSelect.innerHTML = '';
     portfolio.investments.forEach(investment => {
-        // Solo mostrar inversiones con cantidad mayor a 0
         if (investment.amount > 0.000001) {
             const option = document.createElement('option');
             option.value = investment.id;
@@ -585,25 +970,19 @@ function openSellModal() {
         }
     });
     
-    // Si no hay inversiones válidas después de filtrar
     if (sellCryptoSelect.children.length === 0) {
         alert('No tienes inversiones válidas para vender');
         return;
     }
     
-    // Actualizar información inicial
     updateSellModal();
-    
-    // Mostrar modal
     sellModal.classList.add('active');
 }
 
-// Cerrar modal de venta
 function closeSellModalFunc() {
     sellModal.classList.remove('active');
 }
 
-// Actualizar información en el modal de venta
 function updateSellModal() {
     const selectedId = parseInt(sellCryptoSelect.value);
     const investment = portfolio.investments.find(inv => inv.id === selectedId);
@@ -629,17 +1008,9 @@ function updateSellModal() {
     sellProfit.value = `${profitSymbol}$${Math.abs(profit).toFixed(2)} (${profitSymbol}${Math.abs(profitPercentage).toFixed(2)}%)`;
     sellProfit.className = profitClass;
     
-    // Habilitar/deshabilitar botón de venta basado en validaciones
-    if (sellAmount <= 0 || currentValue <= 0) {
-        confirmSellButton.disabled = true;
-        confirmSellButton.title = 'No puedes vender una cantidad igual a 0';
-    } else {
-        confirmSellButton.disabled = false;
-        confirmSellButton.title = '';
-    }
+    confirmSellButton.disabled = sellAmount <= 0 || currentValue <= 0;
 }
 
-// Manejar la venta de criptomonedas
 async function handleSell() {
     const selectedId = parseInt(sellCryptoSelect.value);
     const investmentIndex = portfolio.investments.findIndex(inv => inv.id === selectedId);
@@ -653,7 +1024,6 @@ async function handleSell() {
     const sellPercentageVal = parseInt(sellPercentage.value);
     const sellAmount = investment.amount * (sellPercentageVal / 100);
     
-    // Validar que la cantidad a vender sea mayor a 0
     if (sellAmount <= 0) {
         alert('Error: La cantidad a vender debe ser mayor a 0');
         return;
@@ -663,27 +1033,16 @@ async function handleSell() {
     const tradingFeeAmount = currentValue * tradingFee;
     const netAmount = currentValue - tradingFeeAmount;
     
-    // Validar que el valor actual sea mayor a 0
-    if (currentValue <= 0) {
-        alert('Error: No puedes vender una criptomoneda con valor 0');
-        return;
-    }
-    
-    // Calcular ganancia/pérdida
     const originalValue = sellAmount * investment.purchasePrice;
     const profit = currentValue - originalValue;
     
-    // Actualizar portafolio
     if (sellPercentageVal === 100) {
-        // Vender toda la inversión
         portfolio.investments.splice(investmentIndex, 1);
     } else {
-        // Vender solo una parte
         investment.amount -= sellAmount;
         investment.investmentValue = investment.amount * investment.purchasePrice;
         investment.currentValue = investment.amount * investment.currentPrice;
         
-        // Si después de vender la cantidad es muy pequeña (casi 0), eliminar la inversión
         if (investment.amount < 0.000001) {
             portfolio.investments.splice(investmentIndex, 1);
         }
@@ -692,7 +1051,6 @@ async function handleSell() {
     portfolio.availableBalance += netAmount;
     portfolio.totalInvested -= originalValue;
     
-    // Agregar al historial
     const transaction = {
         type: 'sell',
         crypto: investment.crypto,
@@ -704,187 +1062,8 @@ async function handleSell() {
     };
     transactionHistory.unshift(transaction);
     
-    // ✅ GUARDAR EN BASE DE DATOS
-    await saveTransactionToDatabase(transaction);
+    savePortfolioState();
     
-    // Actualizar visualizaciones
     updatePortfolioDisplay();
-    updateTransactionHistory();
-    closeSellModalFunc();
-    
-    // Mostrar confirmación
-    const profitSymbol = profit >= 0 ? '+' : '';
-    alert(`¡Has vendido ${sellAmount.toFixed(6)} ${cryptoData[investment.crypto].symbol} por $${currentValue.toFixed(2)}! Comisión: $${tradingFeeAmount.toFixed(2)}. Ganancia/Pérdida: ${profitSymbol}$${Math.abs(profit).toFixed(2)}`);
+
 }
-
-function cleanZeroInvestments() {
-    portfolio.investments = portfolio.investments.filter(investment => {
-        return investment.amount > 0.000001 && investment.currentValue > 0.01;
-    });
-}
-
-// Manejar retiro de fondos
-async function handleWithdraw() {
-    const withdrawAmount = parseFloat(withdrawAmountElement.value);
-    
-    // Validaciones
-    if (withdrawAmount <= 0) {
-        alert('Por favor, ingresa un monto válido');
-        return;
-    }
-    
-    if (withdrawAmount > portfolio.availableBalance) {
-        alert('Fondos insuficientes para realizar el retiro');
-        return;
-    }
-    
-    if (withdrawAmount < 10) {
-        alert('El monto mínimo de retiro es $10');
-        return;
-    }
-    
-    // Calcular comisión
-    let withdrawalFeeAmount = withdrawAmount * withdrawalFee;
-    if (withdrawalFeeAmount < minWithdrawalFee) {
-        withdrawalFeeAmount = minWithdrawalFee;
-    }
-    
-    const netAmount = withdrawAmount - withdrawalFeeAmount;
-    
-    if (netAmount <= 0) {
-        alert('El monto de retiro es insuficiente para cubrir la comisión');
-        return;
-    }
-    
-    // Confirmar retiro
-    const confirmWithdraw = confirm(
-        `¿Estás seguro de que quieres retirar $${withdrawAmount.toFixed(2)}?\n` +
-        `Comisión de retiro: $${withdrawalFeeAmount.toFixed(2)}\n` +
-        `Recibirás: $${netAmount.toFixed(2)}`
-    );
-    
-    if (!confirmWithdraw) return;
-    
-    // Realizar retiro
-    portfolio.availableBalance -= withdrawAmount;
-    portfolio.balance -= withdrawAmount;
-    
-    // Agregar al historial
-    const transaction = {
-        type: 'withdraw',
-        value: withdrawAmount,
-        fee: withdrawalFeeAmount,
-        timestamp: new Date()
-    };
-    transactionHistory.unshift(transaction);
-    
-    // ✅ GUARDAR EN BASE DE DATOS
-    await saveTransactionToDatabase(transaction);
-    
-    // Actualizar visualizaciones
-    updatePortfolioDisplay();
-    updateTransactionHistory();
-    
-    // Resetear campo
-    withdrawAmountElement.value = '100';
-    
-    alert(`¡Retiro exitoso! Has retirado $${withdrawAmount.toFixed(2)}. Comisión: $${withdrawalFeeAmount.toFixed(2)}. Neto: $${netAmount.toFixed(2)}`);
-}
-
-// =============================================
-// FUNCIONES PARA BASE DE DATOS
-// =============================================
-
-// Funciones para integración con la base de datos
-// En portafolio.js - VERSIÓN MEJORADA CON ESPERA
-async function saveTransactionToDatabase(transaction) {
-    if (!window.portfolioDB) {
-        console.warn('⚠️ PortfolioDB no está disponible');
-        return;
-    }
-
-    try {
-        // Esperar hasta que PortfolioDB esté completamente inicializado
-        let attempts = 0;
-        const maxAttempts = 10; // Máximo 5 segundos de espera
-        
-        while (!portfolioDB.initialized && attempts < maxAttempts) {
-            console.log(`⏳ Esperando inicialización de PortfolioDB... (${attempts + 1}/${maxAttempts})`);
-            await new Promise(resolve => setTimeout(resolve, 500)); // Esperar 500ms
-            attempts++;
-        }
-
-        if (!portfolioDB.initialized) {
-            console.warn('⚠️ PortfolioDB no se inicializó a tiempo, guardando en pendientes');
-        }
-
-        let result;
-        
-        switch (transaction.type) {
-            case 'buy':
-                result = await portfolioDB.saveBuyTransaction(transaction);
-                break;
-            case 'sell':
-                const investment = portfolio.investments.find(inv => 
-                    inv.crypto === transaction.crypto
-                );
-                if (investment) {
-                    result = await portfolioDB.saveSellTransaction(transaction, investment);
-                } else {
-                    console.error('❌ No se encontró la inversión para vender:', transaction.crypto);
-                }
-                break;
-            case 'withdraw':
-                result = await portfolioDB.saveWithdrawTransaction(transaction);
-                break;
-        }
-        
-        if (result && result.success) {
-            console.log('✅ Transacción guardada:', result);
-            
-            if (result.pending) {
-                console.log('📝 Transacción en cola, se procesará cuando PortfolioDB esté listo');
-            } else if (result.local) {
-                console.log('💾 Transacción guardada localmente');
-            } else {
-                console.log('🚀 Transacción guardada en la base de datos');
-            }
-        }
-    } catch (error) {
-        console.error('❌ Error guardando transacción:', error);
-    }
-}
-
-async function savePortfolioSnapshot() {
-    if (!window.portfolioDB) {
-        console.warn('⚠️ PortfolioDB no está disponible');
-        return;
-    }
-
-    try {
-        await portfolioDB.savePortfolioSnapshot(portfolio);
-        console.log('✅ Snapshot del portafolio guardado');
-    } catch (error) {
-        console.error('❌ Error guardando snapshot:', error);
-    }
-}
-
-// Guardar snapshot periódicamente y al cerrar la página
-function setupPortfolioAutoSave() {
-    // Guardar snapshot cada 2 minutos
-    setInterval(() => {
-        if (portfolio.investments.length > 0) {
-            savePortfolioSnapshot();
-        }
-    }, 120000);
-    
-    // Guardar snapshot cuando se cierre la página
-    window.addEventListener('beforeunload', () => {
-        if (portfolio.investments.length > 0) {
-            savePortfolioSnapshot();
-        }
-    });
-}
-
-// Inicializar la aplicación cuando se carga la página
-document.addEventListener('DOMContentLoaded', init);

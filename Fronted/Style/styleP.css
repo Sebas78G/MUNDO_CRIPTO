@@ -882,3 +882,430 @@ input[type="range"]::-webkit-slider-thumb {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     pointer-events: none;
 }
+
+/* AGREGAR AL INICIO DE styleP.css O AL FINAL CON MÁXIMA PRIORIDAD */
+
+/* ========================================
+   ESTILOS DE BOTONES CON MÁXIMA PRIORIDAD
+   ======================================== */
+
+/* Resetear estilos globales de botones */
+body button,
+body .btn,
+body input[type="button"] {
+    all: unset;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+/* BOTÓN PRIMARIO - Comprar, Comenzar a Tradear */
+body #buy-button,
+body button#buy-button,
+body #start-trading,
+body button#start-trading,
+body .primary-btn,
+body button.primary-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 14px 28px !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+    width: 100% !important;
+    text-align: center !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+body #buy-button:hover,
+body button#buy-button:hover,
+body #start-trading:hover,
+body button#start-trading:hover,
+body .primary-btn:hover,
+body button.primary-btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
+    background: linear-gradient(135deg, #7c8ef0, #8454b8) !important;
+}
+
+body #start-trading:disabled,
+body button#start-trading:disabled {
+    background: linear-gradient(135deg, #6c757d, #495057) !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+    transform: none !important;
+}
+
+/* BOTÓN SECUNDARIO - Vender Cripto, Retirar */
+body #sell-modal-btn,
+body button#sell-modal-btn,
+body #withdraw-button,
+body button#withdraw-button,
+body .secondary-btn,
+body button.secondary-btn {
+    background: linear-gradient(135deg, #f093fb, #f5576c) !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4) !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+body #sell-modal-btn:hover,
+body button#sell-modal-btn:hover,
+body #withdraw-button:hover,
+body button#withdraw-button:hover,
+body .secondary-btn:hover,
+body button.secondary-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 18px rgba(240, 147, 251, 0.5) !important;
+}
+
+body #sell-modal-btn:disabled,
+body button#sell-modal-btn:disabled {
+    background: linear-gradient(135deg, #6c757d, #495057) !important;
+    cursor: not-allowed !important;
+    opacity: 0.5 !important;
+}
+
+/* BOTONES DE PORCENTAJE */
+body .amount-buttons button,
+body .balance-presets button {
+    background: rgba(102, 126, 234, 0.15) !important;
+    color: #667eea !important;
+    border: 2px solid #667eea !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    min-width: 80px !important;
+}
+
+body .amount-buttons button:hover,
+body .balance-presets button:hover {
+    background: #667eea !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+}
+
+/* BOTÓN CONFIRMAR VENTA */
+body #confirm-sell,
+body button#confirm-sell {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: white !important;
+    border: none !important;
+    padding: 14px 28px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+}
+
+body #confirm-sell:hover,
+body button#confirm-sell:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* BOTÓN REFRESCAR */
+body #refresh-prices,
+body button#refresh-prices {
+    background: rgba(79, 172, 254, 0.1) !important;
+    color: #4facfe !important;
+    border: 2px solid transparent !important;
+    padding: 10px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    width: 42px !important;
+    height: 42px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+body #refresh-prices:hover,
+body button#refresh-prices:hover {
+    background: #4facfe !important;
+    color: white !important;
+    transform: rotate(180deg) !important;
+}
+
+/* INPUTS */
+body input[type="number"],
+body input[type="text"],
+body select {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 2px solid rgba(255, 255, 255, 0.15) !important;
+    color: white !important;
+    padding: 14px 18px !important;
+    border-radius: 8px !important;
+    font-size: 1rem !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+body input[type="number"]:focus,
+body input[type="text"]:focus,
+body select:focus {
+    outline: none !important;
+    border-color: #667eea !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.25) !important;
+}
+
+/* BOTÓN EXPORTAR (nuevo) */
+body #export-portfolio-btn,
+body button#export-portfolio-btn {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+}
+
+body #export-portfolio-btn:hover,
+body button#export-portfolio-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Asegurar que los íconos se vean bien */
+body button i,
+body .btn i {
+    font-size: 1.1em !important;
+    display: inline-block !important;
+}
+
+/* MODAL */
+body .modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(5px);
+}
+
+body .modal.active {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+body .close-modal,
+body button.close-modal {
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    background: transparent !important;
+    border: none !important;
+    font-size: 2rem !important;
+    color: #999 !important;
+    cursor: pointer !important;
+    transition: color 0.3s ease !important;
+    width: 40px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+}
+
+body .close-modal:hover,
+body button.close-modal:hover {
+    color: #fff !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    body button,
+    body .btn {
+        padding: 12px 20px !important;
+        font-size: 0.95rem !important;
+    }
+    
+    body #start-trading,
+    body button#start-trading {
+        padding: 14px 24px !important;
+    }
+    
+    body .amount-buttons button,
+    body .balance-presets button {
+        min-width: 70px !important;
+        padding: 8px 16px !important;
+        font-size: 0.9rem !important;
+    }
+}
+
+/* ========================================
+   ESTILOS DE BOTONES CORREGIDOS
+   ======================================== */
+
+/* Botón de comprar */
+#buy-button {
+    background: linear-gradient(135deg, #10b981, #059669) !important;
+    color: white !important;
+    border: none !important;
+    padding: 14px 28px !important;
+    border-radius: 8px !important;
+    font-weight: 700 !important;
+    font-size: 1.05rem !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    transition: all 0.3s ease !important;
+}
+
+#buy-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+}
+
+#buy-button:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Botón de vender */
+#sell-modal-btn {
+    background: linear-gradient(135deg, #f093fb, #f5576c) !important;
+    color: white !important;
+    border: none !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+#sell-modal-btn:hover:not(:disabled) {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(240, 147, 251, 0.4) !important;
+}
+
+#sell-modal-btn:disabled {
+    background: #6c757d !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+/* Botón comenzar trading */
+#start-trading {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    color: white !important;
+    border: none !important;
+    padding: 16px 32px !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    transition: all 0.3s ease !important;
+}
+
+#start-trading:hover:not(:disabled) {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5) !important;
+}
+
+#start-trading:disabled {
+    background: #6c757d !important;
+    cursor: not-allowed !important;
+    opacity: 0.6 !important;
+}
+
+/* Botón retirar */
+#withdraw-button {
+    background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    transition: all 0.3s ease !important;
+}
+
+#withdraw-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4) !important;
+}
+
+/* Botón confirmar venta */
+#confirm-sell {
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: white !important;
+    border: none !important;
+    padding: 12px 24px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    transition: all 0.3s ease !important;
+}
+
+#confirm-sell:hover:not(:disabled) {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4) !important;
+}
+
+/* Botones de porcentaje */
+.amount-buttons button,
+.balance-presets button {
+    background: rgba(102, 126, 234, 0.1) !important;
+    color: #667eea !important;
+    border: 2px solid #667eea !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+}
+
+.amount-buttons button:hover,
+.balance-presets button:hover {
+    background: #667eea !important;
+    color: white !important;
+}

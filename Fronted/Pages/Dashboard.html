@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Mundo Cripto</title>
+    <link rel="stylesheet" href="/Fronted/Style/styles.css">
+    <link rel="stylesheet" href="/Fronted/Style/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="global-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1 class="logo">💎 Mundo Cripto</h1>
+                    <nav class="nav-links">
+                        <a href="/Fronted/index.html" class="nav-link">Inicio</a>
+                        <a href="/Fronted/Pages/graficos.html" class="nav-link">Gráficos</a>
+                        <a href="/Fronted/Pages/Portafolio.html" class="nav-link">Portafolio</a>
+                        <a href="/Fronted/Pages/Dashboard.html" class="nav-link active">Dashboard</a>
+                        <a href="/Fronted/Pages/perfil.html" class="nav-link">Perfil</a>
+                    </nav>
+                </div>
+                <div class="auth-section">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="container">
+            <section class="dashboard-hero">
+                <div class="hero-header">
+                    <div>
+                        <h1>📊 Dashboard de Análisis</h1>
+                        <p>Visualiza y gestiona todas tus inversiones y transacciones</p>
+                    </div>
+                    <button id="exportDashboardBtn" class="btn btn-primary">
+                        <i class="fas fa-download"></i> Exportar Dashboard
+                    </button>
+                </div>
+            </section>
+
+            <!-- Summary Cards -->
+            <section class="summary-cards">
+                <div class="card stat-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Total Invertido</h3>
+                        <p class="stat-value" id="totalInvested">$0.00</p>
+                        <span class="stat-label">Capital total</span>
+                    </div>
+                </div>
+                
+                <div class="card stat-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Ganancia Total</h3>
+                        <p class="stat-value profit" id="totalProfit">$0.00</p>
+                        <span class="stat-label" id="profitPercentage">+0%</span>
+                    </div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Transacciones</h3>
+                        <p class="stat-value" id="totalTransactions">0</p>
+                        <span class="stat-label">Operaciones totales</span>
+                    </div>
+                </div>
+
+                <div class="card stat-card">
+                    <div class="card-icon" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Tiempo Activo</h3>
+                        <p class="stat-value" id="investmentTime">0 días</p>
+                        <span class="stat-label">Desde el inicio</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-chart-area"></i> Evolución de Ganancias</h2>
+                    </div>
+                    <canvas id="profitChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h2><i class="fas fa-pie-chart"></i> Distribución del Portfolio</h2>
+                    </div>
+                    <canvas id="portfolioChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Top Cryptos and Transactions -->
+            <section class="data-tables">
+                <div class="table-container">
+                    <h2><i class="fas fa-trophy"></i> Top Criptomonedas</h2>
+                    <div id="topCryptosTable"></div>
+                </div>
+
+                <div class="table-container">
+                    <h2><i class="fas fa-list"></i> Transacciones por Tipo</h2>
+                    <canvas id="transactionsBarChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Transactions Table -->
+            <section class="transactions-section">
+                <div class="transactions-header">
+                    <h2>📜 Historial de Transacciones</h2>
+                    <div class="table-actions">
+                        <input type="text" id="searchInput" placeholder="Buscar por cripto..." class="search-input">
+                        <select id="typeFilter" class="filter-select">
+                            <option value="">Todos los tipos</option>
+                            <option value="buy">Compra</option>
+                            <option value="sell">Venta</option>
+                            <option value="withdraw">Retiro</option>
+                        </select>
+                        <button id="exportExcelBtn" class="btn btn-outline">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table id="transactionsTable">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-tag"></i> Tipo</th>
+                                <th><i class="fas fa-coins"></i> Criptomoneda</th>
+                                <th><i class="fas fa-hashtag"></i> Cantidad</th>
+                                <th><i class="fas fa-dollar-sign"></i> Precio</th>
+                                <th><i class="fas fa-wallet"></i> Inversión</th>
+                                <th><i class="fas fa-chart-line"></i> Valor Actual</th>
+                                <th><i class="fas fa-percentage"></i> Ganancia/Pérdida</th>
+                                <th><i class="fas fa-percent"></i> %</th>
+                                <th><i class="fas fa-calendar"></i> Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsBody">
+                            <!-- Rows will be inserted here by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Insight Section -->
+            <section class="insight-section">
+                <div class="insight-card">
+                    <h3>💡 Insight Destacado</h3>
+                    <p id="insightText">Cargando análisis...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="/Fronted/Funtion/api-system.js"></script>
+    <script src="/Fronted/Funtion/header-manager.js"></script>
+    <script src="/Fronted/Funtion/dashboard-enhanced.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-light: #e2e8f0;
+            --border-color: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+        }
+
+        .dashboard-main {
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .dashboard-hero {
+            margin-bottom: 3rem;
+        }
+
+        .hero-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-hero p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-content h3 {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .profit {
+            color: var(--success-color);
+        }
+
+        .loss {
+            color: var(--danger-color);
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .chart-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-header h2 {
+            font-size: 1.3rem;
+            color: var(--text-light);
+        }
+
+        .data-tables {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .table-container h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .transactions-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-input,
+        .filter-select {
+            padding: 0.75rem 1rem;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .search-input {
+            min-width: 250px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--bg-dark);
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            font-weight: 600;
+            color: #94a3b8;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-buy {
+            color: var(--success-color);
+        }
+
+        .status-sell {
+            color: var(--warning-color);
+        }
+
+        .status-withdraw {
+            color: var(--danger-color);
+        }
+
+        .insight-section {
+            margin-bottom: 2rem;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 16px;
+            padding: 2rem;
+            color: white;
+        }
+
+        .insight-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .insight-card p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-hero h1 {
+                font-size: 2rem;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section,
+            .data-tables {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .table-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+        }
+    </style>
+</body>
+</html>

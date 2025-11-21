@@ -35,7 +35,7 @@ class NewsSystem {
 
     async fetchNews() {
         try {
-            const apiUrl = 'https://cryptopanic.com/api/v1/posts/?auth_token=demo&public=true';
+            const apiUrl = 'https://min-api.cryptocompare.com/data/v2/news/?lang=EN';
             const response = await fetch(apiUrl);
             
             if (!response.ok) {
@@ -43,7 +43,7 @@ class NewsSystem {
             }
             
             const data = await response.json();
-            return this.processNewsData(data.results || []);
+            return this.processNewsData(data.Data || []);
             
         } catch (error) {
             console.warn('⚠️ Error con API externa, usando noticias de ejemplo');
@@ -55,12 +55,12 @@ class NewsSystem {
         return apiNews.slice(0, 6).map((newsItem, index) => ({
             id: newsItem.id || Date.now() + index,
             title: this.cleanTitle(newsItem.title),
-            description: this.cleanDescription(newsItem.metadata?.description || newsItem.title),
+            description: this.cleanDescription(newsItem.body),
             full_content: this.generateFullContent(newsItem),
             url: newsItem.url,
-            source: newsItem.source?.title || 'CryptoPanic',
-            published_at: newsItem.published_at,
-            currencies: newsItem.currencies || [],
+            source: newsItem.source || 'CryptoCompare',
+            published_at: new Date(newsItem.published_on * 1000).toISOString(),
+            currencies: newsItem.categories.split('|'),
             image: this.getNewsImage(newsItem, index),
             category: this.getNewsCategory(newsItem),
             author: this.getAuthor(newsItem),
