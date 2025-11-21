@@ -66,6 +66,26 @@ header {
     gap: 15px;
 }
 
+/* Alineación principal del header: logo, nav y auth */
+header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.nav .nav-link {
+    color: rgba(255,255,255,0.95);
+    text-decoration: none;
+    font-weight: 600;
+}
+
 .logo i {
     font-size: 2.5rem;
 }
