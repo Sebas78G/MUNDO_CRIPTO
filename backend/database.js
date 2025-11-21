@@ -23,18 +23,15 @@ async function initDatabase() {
         return true;
     } catch (error) {
         console.error('❌ Error conectando a la base de datos:', error.message);
-        // Si la conexión falla, es un error fatal. `pool` no será válido.
-        pool = null; // Asegurarse de que el pool no sea utilizable.
+        pool = null; 
         return false;
     }
 }
 
-// Exportar el pool y la función de inicialización
-// El pool se crea en initDatabase y se reutiliza en toda la app.
+
 module.exports = {
     get pool() {
         if (!pool) {
-            // Esto previene que la aplicación intente usar un pool no inicializado.
             throw new Error("El pool de la base de datos no ha sido inicializado. Ejecute initDatabase() primero.");
         }
         return pool;

@@ -1,26 +1,21 @@
-// auth.js - Sistema de autenticación para Mundo Cripto
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-//const { pool } = require('./database'); // Moved to be lazy-loaded
+
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mundo_cripto_secret_key_2024';
 
 class AuthSystem {
 
-    // Helper method to get the pool only when needed
-    // This avoids the initialization error at startup
     getPool() {
         return require('./database').pool;
     }
 
-    // Registrar usuario
     async registerUser(userData) {
         try {
             const { email, password, name } = userData;
             
             console.log('📝 Intentando registrar usuario:', { email, name });
             
-            // Validaciones básicas
             if (!email || !password || !name) {
                 return { 
                     success: false, 
@@ -75,14 +70,12 @@ class AuthSystem {
         }
     }
     
-    // Login de usuario
     async loginUser(credentials) {
         try {
             const { email, password } = credentials;
             
             console.log('🔐 Intentando login para:', email);
             
-            // Validaciones básicas
             if (!email || !password) {
                 return { 
                     success: false, 
@@ -90,7 +83,7 @@ class AuthSystem {
                 };
             }
 
-            // Buscar usuario
+
             const [users] = await this.getPool().execute(
                 `SELECT u.id, u.email, u.password_hash, u.name, u.is_active 
                  FROM users u WHERE u.email = ?`,
@@ -108,7 +101,7 @@ class AuthSystem {
             const user = users[0];
             console.log('👤 Usuario encontrado:', { id: user.id, name: user.name, email: user.email });
             
-            // Verificar si está activo
+  
             if (!user.is_active) {
                 return { 
                     success: false, 
@@ -116,7 +109,7 @@ class AuthSystem {
                 };
             }
             
-            // Verificar contraseña
+      
             console.log('🔑 Verificando contraseña...');
             const isPasswordValid = await bcrypt.compare(password, user.password_hash);
             
@@ -130,13 +123,13 @@ class AuthSystem {
             
             console.log('✅ Contraseña válida');
             
-            // Actualizar último login
+          
             await this.getPool().execute(
                 'UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE id = ?',
                 [user.id]
             );
             
-            // Generar token JWT
+      
             const token = jwt.sign(
                 { 
                     userId: user.id, 
@@ -155,7 +148,7 @@ class AuthSystem {
                 user: {
                     id: user.id,
                     email: user.email,
-                    name: user.name  // ← Asegurar que el nombre se envía
+                    name: user.name  
                 },
                 token 
             };
@@ -169,7 +162,7 @@ class AuthSystem {
         }
     }
     
-    // Verificar token JWT
+   
     verifyToken(token) {
         try {
             const decoded = jwt.verify(token, JWT_SECRET);
@@ -191,8 +184,7 @@ class AuthSystem {
         }
     }
     
-    // Obtener perfil de usuario
-   // En auth.js - Asegurar que getUserProfile devuelve el name
+    
 async getUserProfile(userId) {
     try {
         console.log('📋 Obteniendo perfil para usuario ID:', userId);
@@ -215,7 +207,7 @@ async getUserProfile(userId) {
         const user = users[0];
         console.log('✅ Perfil obtenido:', { 
             id: user.id, 
-            name: user.name,  // ← Verificar que esto tiene valor
+            name: user.name,  
             email: user.email 
         });
         
@@ -224,7 +216,7 @@ async getUserProfile(userId) {
             user: {
                 id: user.id,
                 email: user.email,
-                name: user.name,  // ← Asegurar que se envía el name
+                name: user.name,  
                 created_at: user.created_at,
                 last_login: user.last_login
             }
@@ -238,10 +230,10 @@ async getUserProfile(userId) {
     }
 }
 
-    // Verificar salud del sistema
+    
     async healthCheck() {
         try {
-            // Verificar conexión a la base de datos
+          
             const [result] = await this.getPool().execute('SELECT 1 as health');
             return {
                 success: true,
